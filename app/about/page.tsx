@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Container from '@/components/layout/Container';
 import ResumeDial from '@/components/resume/ResumeDial';
 import Badge from '@/components/ui/Badge';
-import Link from '@/components/ui/Link';
+import Button from '@/components/ui/Button';
 
 export default function AboutPage() {
   const [level, setLevel] = useState(0);
@@ -74,12 +74,12 @@ function ShortResume() {
       <section className="border-4 border-neo-text bg-neo-secondary p-6 shadow-neo">
         <h3 className="font-heading font-bold text-2xl mb-4">Connect</h3>
         <div className="flex flex-wrap gap-4">
-          <Link href="https://github.com/mtornga" variant="primary">
+          <Button href="https://github.com/mtornga" variant="primary">
             GitHub
-          </Link>
-          <Link href="https://linkedin.com/in/marktornga" variant="primary">
+          </Button>
+          <Button href="https://linkedin.com/in/marktornga" variant="primary">
             LinkedIn
-          </Link>
+          </Button>
         </div>
       </section>
     </div>
@@ -164,12 +164,12 @@ function MediumResume() {
       <section className="border-4 border-neo-text bg-neo-accent p-8 shadow-neo transform rotate-1">
         <h3 className="font-heading font-bold text-3xl mb-4">Get in Touch</h3>
         <div className="flex flex-wrap gap-4">
-          <Link href="https://github.com/mtornga" variant="primary">
+          <Button href="https://github.com/mtornga" variant="primary">
             GitHub
-          </Link>
-          <Link href="https://linkedin.com/in/marktornga" variant="primary">
+          </Button>
+          <Button href="https://linkedin.com/in/marktornga" variant="primary">
             LinkedIn
-          </Link>
+          </Button>
         </div>
       </section>
     </div>
@@ -257,9 +257,9 @@ function LongResume() {
               <Badge variant="default">Real-time Tracking</Badge>
               <Badge variant="default">AWS</Badge>
             </div>
-            <Link href="/portfolio/deeraitrackingresponse" variant="primary">
+            <Button href="/portfolio/deeraitrackingresponse" variant="primary">
               View Project Details
-            </Link>
+            </Button>
           </div>
 
           {/* Add more projects */}
@@ -339,12 +339,12 @@ function LongResume() {
           Interested in working together or want to learn more?
         </p>
         <div className="flex flex-wrap gap-4">
-          <Link href="https://github.com/mtornga" variant="primary">
+          <Button href="https://github.com/mtornga" variant="primary">
             GitHub
-          </Link>
-          <Link href="https://linkedin.com/in/marktornga" variant="primary">
+          </Button>
+          <Button href="https://linkedin.com/in/marktornga" variant="primary">
             LinkedIn
-          </Link>
+          </Button>
         </div>
       </section>
     </div>
