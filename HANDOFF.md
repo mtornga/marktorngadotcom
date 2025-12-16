@@ -1,233 +1,230 @@
 # marktornga.com - Session Handoff
 
-## Current Status: Phase 2 Complete ✓
+## Current Status: DEPLOYED TO PRODUCTION ✓
 
 **Date:** 2025-12-16
-**Dev Server:** Running at http://localhost:3000 (shell ID: bd3bbbe)
-**Plan File:** `/Users/marktornga/.claude/plans/curious-dreaming-hare.md`
+**Production URL:** https://marktornga.com
+**Vercel URL:** https://marktorngadotcom.vercel.app
+**GitHub Repo:** https://github.com/mtornga/marktorngadotcom
 
 ---
 
 ## What We Accomplished This Session
 
 ### Phase 1: Foundation - COMPLETE ✓
-
-1. **Project Setup**
-   - Initialized Next.js 16 with TypeScript
-   - Configured Tailwind CSS 4 with `@tailwindcss/postcss`
-   - Installed all dependencies: MDX, next-mdx-remote, gray-matter, reading-time, next-seo, sharp
-   - Set up `next.config.js`, `tailwind.config.ts`, `postcss.config.js`, `tsconfig.json`
-   - Created project structure: `app/`, `components/`, `lib/`, `types/`, `content/`, `public/images/`
-
-2. **Neo-Brutalist Design System**
-   - **Colors:** Hot pink (#FF006E), bright yellow (#FFD60A), cyan (#00F5FF), black borders (#1A1A1A)
-   - **Typography:** Space Grotesk (headings, 900 weight) + Inter (body) via next/font
-   - **Visual Style:** 4px thick borders, 8px hard shadows (no blur), asymmetric layouts
-   - **CSS Classes:** `.neo-card`, `.neo-button-primary/secondary/accent`, `.neo-link`, `.neo-badge`
-   - **Hover Effects:** Shadows shift from 8px to 4px offset with transform on hover
-
-3. **TypeScript Types**
-   - `types/project.ts` - Project and ProjectFrontMatter interfaces
-   - `types/post.ts` - Post and PostFrontMatter interfaces
-
-4. **Homepage**
-   - Created `app/layout.tsx` with fonts, metadata, and root structure
-   - Created `app/page.tsx` with bold hero section
-   - Features: Rotated headings, chunky buttons, "Under Construction" notice
-   - **Working and live** at http://localhost:3000
-
-5. **MCP Servers**
-   - Set up `.mcp.json` with context7 and puppeteer configurations
-   - Created `.mcp.json.example` for reference
-   - Added `.mcp.json` to `.gitignore` for security
-   - **Note:** MCP tools will be available after session restart
+*(Completed in previous session - see below for details)*
 
 ### Phase 2: Design System Components - COMPLETE ✓
+*(Completed in previous session - see below for details)*
 
-1. **Utility Functions**
-   - Created `lib/utils.ts` with `cn()` helper for className merging
-   - Installed `clsx` and `tailwind-merge` packages
+### Phase 3: Portfolio Section - COMPLETE ✓
 
-2. **UI Components** (`components/ui/`)
-   - **Button.tsx** - Reusable button with variants (primary, secondary, accent) and sizes (sm, md, lg)
-   - **Card.tsx** - Neo-brutalist card with customizable padding and hover effects
-   - **Badge.tsx** - Tech stack badges with variant support
-   - **Link.tsx** - Wrapper around Next.js Link with neo-brutalist styling, external link support
+1. **Content Management Infrastructure**
+   - Created `lib/content.ts` with functions to read and parse MDX project files
+     - `getProjectBySlug()` - Fetch single project by slug
+     - `getAllProjects()` - Get all projects
+     - `getFeaturedProjects()` - Get featured projects only
+   - Created `lib/mdx.ts` with `compileMDX()` function using next-mdx-remote/rsc
+   - Created `types/project.ts` with ProjectFrontMatter and Project interfaces
 
-3. **Layout Components** (`components/layout/`)
-   - **Container.tsx** - Max-width container with responsive padding (sizes: sm, md, lg, full)
-   - **Header.tsx** - Sticky header with "MT" logo, desktop/mobile navigation
-   - **Footer.tsx** - Footer with social links (GitHub, LinkedIn), branding, copyright
+2. **Portfolio Components** (`components/portfolio/`)
+   - **ProjectCard.tsx** - Card component for project grid
+     - Displays hero image, title, description, tags, status badge
+     - Hover effects with scale transform
+     - Links to project detail page
+   - **ProjectGrid.tsx** - Responsive grid layout for project cards
+     - 1 column mobile, 2 columns tablet, 3 columns desktop
+   - **ProjectHero.tsx** - Large hero section for project detail pages
+     - Hero image with chunky border
+     - Status badge, title, description
+     - Tech stack tags
+     - GitHub/Demo links with buttons
 
-4. **Integration**
-   - Updated `app/layout.tsx` to include Header and Footer
-   - Updated `app/page.tsx` to use new Button and Card components
-   - Fixed TypeScript errors (`React.Node` → `React.ReactNode`)
-   - Fixed font weight issue (Space Grotesk doesn't support 900 weight)
+3. **Portfolio Pages**
+   - **app/portfolio/page.tsx** - Portfolio listing page
+     - Grid of all projects
+     - Bold heading with neo-brutalist styling
+   - **app/portfolio/[slug]/page.tsx** - Dynamic project detail page
+     - MDX content rendering with prose styling
+     - ProjectHero component
+     - generateStaticParams for SSG
+     - Fixed Next.js 16 async params (must await params)
 
-5. **Build & Testing**
-   - Successful production build with no errors
-   - Dev server running and rendering all components correctly
-   - All neo-brutalist styling applied (thick borders, hard shadows, hover effects)
+4. **DeerAI Tracking Response Project**
+   - Created `content/projects/deeraitrackingresponse.mdx` with full project description
+   - Added hero image at `public/images/projects/deer-ai-tracking-hero.png`
+   - Comprehensive content: overview, technical architecture, key features, challenges
+   - Featured project with status "Active Development"
+   - Tags: Computer Vision, PyTorch, YOLO, Robotics, Real-time Tracking, AWS
+
+5. **Homepage Integration**
+   - Added featured projects section to homepage
+   - Displays featured project (DeerAI) with hero styling
+   - "View All Projects" button linking to portfolio page
+
+6. **Image Display Fixes**
+   - Discovered Next.js Image optimization issue with quarantine attributes
+   - Switched from Next.js Image component to standard HTML `<img>` tags
+   - Fixed in ProjectHero.tsx and ProjectCard.tsx
+
+7. **Tailwind Typography**
+   - Added `@tailwindcss/typography` plugin
+   - Configured prose styles with neo-brutalist theme
+     - Pink headings and links
+     - Chunky 4px underlines on links
+     - Custom code block styling
+     - Reduced paragraph spacing for tighter layout
+
+### Phase 4: Resume/About Page - COMPLETE ✓
+
+1. **Interactive Resume Dial Component** (`components/resume/ResumeDial.tsx`)
+   - Semicircle dial design (like speedometer)
+   - 4 levels: Minimal, Short, Medium, Long
+   - Interactive features:
+     - Click colored dots around arc to select level
+     - Click/drag pink pointer arm
+     - Click cyan center knob to cycle through levels
+     - Click button labels below dial
+   - Neo-brutalist styling with thick borders and hard shadows
+   - Smooth transitions between levels
+   - Proper positioning math for screen coordinates
+
+2. **About Page** (`app/about/page.tsx`)
+   - Progressive disclosure resume with 4 detail levels:
+     - **Minimal**: Just "Highly extensible human" tagline
+     - **Short**: Quick intro, key skills, social links
+     - **Medium**: Full profile with featured projects, skills sections
+     - **Long**: Complete resume with experience, projects, skills, education
+   - Resume content based on salvaged config and placeholder structure
+   - Smooth fadeIn animations when switching levels
+   - All content styled with neo-brutalist aesthetic
+
+3. **Dial Iterations** (5+ iterations to get right)
+   - Fixed circle positioning with proper trigonometry
+   - Corrected Y-axis calculations for screen coordinates (Y goes down)
+   - Adjusted angles from full circle to semicircle (0° to 180°)
+   - Fine-tuned spacing between dial and controls
+   - Fixed pointer rotation for CSS transforms
+
+4. **Navigation Integration**
+   - About link already in Header navigation
+   - Ready to use at `/about`
+
+### Phase 5: Deployment to Vercel - COMPLETE ✓
+
+1. **Git Repository**
+   - Committed all code with proper commit messages
+   - Pushed to GitHub: https://github.com/mtornga/marktorngadotcom
+   - Clean .gitignore excluding node_modules, .next, .env, .mcp.json
+
+2. **Vercel Setup**
+   - Installed Vercel CLI globally
+   - Authenticated with Vercel account
+   - Created project: mark-torngas-projects/marktorngadotcom
+   - Connected to GitHub repository
+
+3. **Build Fixes**
+   - Fixed TypeScript error: Link component doesn't support `variant` prop
+   - Replaced styled Link components with Button components in About page
+   - Successful production build with Next.js 16 + Turbopack
+
+4. **Custom Domain Configuration**
+   - Added domains to Vercel:
+     - marktornga.com (root)
+     - www.marktornga.com (www subdomain)
+   - Configured DNS in Route 53:
+     - A record: marktornga.com → 76.76.21.21
+     - A record: www.marktornga.com → 76.76.21.21
+   - Switched nameservers from NSOne to Route 53
+   - DNS propagated successfully
+
+5. **Live URLs**
+   - **Production**: https://marktornga.com
+   - **WWW**: https://www.marktornga.com
+   - **Vercel**: https://marktorngadotcom.vercel.app
 
 ---
 
 ## Tech Stack
 
 - **Framework:** Next.js 16 (App Router) with TypeScript
-- **Styling:** Tailwind CSS 4 + custom neo-brutalist design system
-- **Content:** MDX via next-mdx-remote + gray-matter
+- **Styling:** Tailwind CSS 4 + custom neo-brutalist design system + @tailwindcss/typography
+- **Content:** MDX via next-mdx-remote/rsc + gray-matter
 - **Fonts:** next/font/google (Space Grotesk + Inter)
-- **Images:** next/image with sharp
+- **Images:** Standard HTML img tags (bypassed Next.js Image for compatibility)
 - **SEO:** next-seo package
-- **Hosting:** Vercel (planned)
+- **Hosting:** Vercel (LIVE)
+- **Domain:** Route 53 DNS → Vercel hosting
 
 ---
 
 ## Key Files Created/Modified
 
 ### Configuration
-- `package.json` - Updated with Next.js scripts and all dependencies
+- `package.json` - All dependencies including MDX, typography plugin
 - `next.config.js` - Configured for MDX and image optimization
-- `tailwind.config.ts` - Custom neo-brutalist colors, shadows, borders
+- `tailwind.config.ts` - Custom neo-brutalist colors, shadows, borders, typography
 - `postcss.config.js` - @tailwindcss/postcss + autoprefixer
 - `tsconfig.json` - TypeScript config for Next.js
 
 ### App Structure
-- `app/layout.tsx` - Root layout with fonts, metadata
-- `app/page.tsx` - Homepage with hero section
-- `app/globals.css` - Tailwind imports + neo-brutalist CSS system
+- `app/layout.tsx` - Root layout with fonts, metadata, Header, Footer
+- `app/page.tsx` - Homepage with hero section and featured projects
+- `app/globals.css` - Tailwind imports + neo-brutalist CSS + fadeIn animation
+- `app/portfolio/page.tsx` - Portfolio listing page
+- `app/portfolio/[slug]/page.tsx` - Dynamic project detail page (with async params fix)
+- `app/about/page.tsx` - About/Resume page with dial control
+
+### Content
+- `content/projects/deeraitrackingresponse.mdx` - Full DeerAI project content
+- `public/images/projects/deer-ai-tracking-hero.png` - Project hero image
 
 ### Types
-- `types/project.ts` - Project data structures
+- `types/project.ts` - Project data structures with MDX support
 - `types/post.ts` - Blog post data structures
 
-### MCP Configuration
-- `.mcp.json` - context7 + puppeteer server configs (gitignored)
-- `.mcp.json.example` - Template for reference
+### Components
 
-### Components (NEW in Phase 2)
-- `components/ui/Button.tsx` - Reusable button component
-- `components/ui/Card.tsx` - Neo-brutalist card component
-- `components/ui/Badge.tsx` - Tech stack badges
-- `components/ui/Link.tsx` - Custom link wrapper
-- `components/layout/Container.tsx` - Max-width container
-- `components/layout/Header.tsx` - Site header with navigation
-- `components/layout/Footer.tsx` - Site footer with social links
+**UI Components** (`components/ui/`)
+- `Button.tsx` - Reusable button with variants and sizes
+- `Card.tsx` - Neo-brutalist card component
+- `Badge.tsx` - Tech stack badges
+- `Link.tsx` - Custom link wrapper (no variant prop)
+- `index.ts` - Barrel export
 
-### Utilities (NEW in Phase 2)
+**Layout Components** (`components/layout/`)
+- `Container.tsx` - Max-width container
+- `Header.tsx` - Site header with navigation
+- `Footer.tsx` - Site footer with social links
+- `index.ts` - Barrel export
+
+**Portfolio Components** (`components/portfolio/`)
+- `ProjectCard.tsx` - Project card for grid (uses standard img)
+- `ProjectGrid.tsx` - Asymmetric grid layout
+- `ProjectHero.tsx` - Large hero section (uses standard img)
+- `index.ts` - Barrel export
+
+**Resume Components** (`components/resume/`)
+- `ResumeDial.tsx` - Interactive semicircle dial with drag support
+
+### Libraries
+- `lib/content.ts` - MDX project content fetching utilities
+- `lib/mdx.ts` - MDX compilation with next-mdx-remote
 - `lib/utils.ts` - className merging utility (cn function)
 
 ### Documentation
 - `CLAUDE.md` - Project context for Claude Code
-- `HANDOFF.md` - This file (updated with Phase 2 completion)
+- `HANDOFF.md` - This file (comprehensive session history)
 
 ---
 
-## How to Start Next Session
+## Design System Reference
 
-1. **Restart Claude Code** to load MCP servers (context7 + puppeteer)
-
-2. **Start dev server** (if not already running):
-   ```bash
-   npm run dev
-   ```
-   Site will be at http://localhost:3000
-
-3. **View the current site:**
-   - Open http://localhost:3000 in browser
-   - Use puppeteer MCP tools (available after restart) to take screenshots
-
-4. **Reference the plan:**
-   - Full implementation plan at `/Users/marktornga/.claude/plans/curious-dreaming-hare.md`
-   - Includes all 7 phases with detailed steps
-
----
-
-## What's Next: Phase 3 - Portfolio (Priority)
-
-According to the plan, Phase 3 focuses on building out the portfolio section:
-
-### Tasks to Complete
-1. **Enhance Homepage** (`app/page.tsx`)
-   - Make hero section more bold and experimental
-   - Add featured projects grid below hero
-   - Consider asymmetric layout with rotated/offset elements
-
-2. **Create Portfolio Components** (`components/portfolio/`)
-   - **ProjectCard.tsx** - Card for displaying project preview in grid
-   - **ProjectGrid.tsx** - Asymmetric grid layout for projects
-   - **ProjectHero.tsx** - Large hero section for project detail pages
-
-3. **Portfolio Listing Page** (`app/portfolio/page.tsx`)
-   - Grid of all projects
-   - Filter/sort options (optional)
-   - Bold, chunky layout
-
-4. **Portfolio Detail Page** (`app/portfolio/[slug]/page.tsx`)
-   - Dynamic route for individual projects
-   - MDX rendering support
-   - Project hero, description, tech stack, links
-
-5. **Create DeerAITrackingResponse Content**
-   - Create `content/projects/deeraitrackingresponse.mdx`
-   - Write project description and details
-   - Add screenshots/images to `public/images/projects/`
-   - This will be the featured/hero project
-
----
-
-## Important Context for Next Session
-
-### Design Direction
-- **Neo-brutalist aesthetic:** Push boundaries, be experimental
-- **Bold and chunky:** Everything oversized, thick borders, hard shadows
-- **Asymmetric layouts:** Offset elements, rotated headings, overlapping content
+### Neo-Brutalist Aesthetic
+- **Bold and chunky:** Oversized elements, thick borders, hard shadows
 - **High contrast:** Bright colors on light backgrounds, black borders everywhere
-- **Simple interactivity:** No complex animations initially, focus on hover states
-
-### Content Priority
-1. **Portfolio first** - Showcase projects (especially deeraitrackingresponse)
-2. **Blog secondary** - Migrate 2 existing posts from salvage folder
-3. **About page** - Bio, skills, social links
-
-### Salvaged Content Location
-- `marktorngadotcom-salvage/content/posts/` - 2 blog posts to migrate
-- `marktorngadotcom-salvage/assets/images/` - 8 images to optimize
-- `marktorngadotcom-salvage/config/_config.yml` - Old site metadata
-
-### Performance Targets
-- Lighthouse score: 95+ on all metrics
-- First Contentful Paint: < 1.5s
-- Core Web Vitals: All green
-
----
-
-## Known Issues / Notes
-
-1. **Dev Server:** Currently running in background (shell ID: bd3bbbe)
-2. **Fonts:** Space Grotesk weight limited to 700 (900 not available via Google Fonts)
-3. **Module Format:** Removed `"type": "commonjs"` from package.json to fix ES module errors
-4. **Tailwind 4:** Required `@tailwindcss/postcss` instead of direct `tailwindcss` plugin
-5. **TypeScript Fix:** Changed `React.Node` to `React.ReactNode` in layout.tsx
-6. **Dependencies Added:** clsx, tailwind-merge for className utilities
-
----
-
-## Quick Reference
-
-### Run Commands
-```bash
-npm run dev      # Start dev server
-npm run build    # Build for production
-npm run start    # Start production server
-npm run lint     # Run ESLint
-```
-
-### Important URLs
-- Local dev: http://localhost:3000
-- GitHub: https://github.com/mtornga/marktorngadotcom
-- LinkedIn: https://linkedin.com/in/marktornga
+- **Asymmetric layouts:** Rotated headings, offset elements
+- **Interactive elements:** Hover states with shadow shifts and transforms
 
 ### Color Palette
 ```css
@@ -240,26 +237,237 @@ npm run lint     # Run ESLint
 --color-border: #1A1A1A       /* Thick black borders */
 ```
 
----
+### Typography
+- **Headings:** Space Grotesk, weight 700 (900 not available)
+- **Body:** Inter, regular weight
+- **Links:** 4px thick underlines with 4px offset
+- **Prose:** Custom styling via @tailwindcss/typography
 
-## Session Goals for Next Time
-
-1. Take screenshots with puppeteer MCP to see current design with new components
-2. Complete Phase 3: Portfolio section
-3. Create DeerAITrackingResponse project content and page
-4. Enhance homepage with featured projects grid
-5. Consider: Add more experimental/bold design elements to push neo-brutalist aesthetic
-
----
-
-## Questions to Resolve Next Session
-
-1. Do you want to iterate on the current homepage design before continuing?
-2. Should we create placeholder project content or wait until real projects are ready?
-3. Do you have project screenshots/images ready, or should we use placeholders?
-4. Any specific interactive elements from inspiration folder you want to add?
+### Component Patterns
+- **Borders:** 4px thick black borders on everything
+- **Shadows:** 8px offset, no blur, shifts to 4px on hover
+- **Transforms:** Slight rotation (-1deg to 1deg) for visual interest
+- **Transitions:** 0.2s ease for smooth interactions
 
 ---
 
-**Status:** Ready to continue! 🚀
-**Next Step:** Restart Claude Code session to load MCP servers, then continue with Phase 2 or iterate on homepage.
+## Important Technical Details
+
+### Next.js 16 Async Params
+- **Breaking Change:** Dynamic route params are now Promises
+- **Fix Applied:** Changed `params: { slug: string }` to `params: Promise<{ slug: string }>`
+- **Usage:** Must `await params` before accessing properties
+- **Location:** `app/portfolio/[slug]/page.tsx`
+
+### Image Handling
+- **Issue:** Next.js Image component had quarantine attribute problems
+- **Solution:** Use standard HTML `<img>` tags instead
+- **Benefits:** Direct file access, no optimization pipeline issues
+- **Locations:** ProjectHero.tsx, ProjectCard.tsx
+
+### Link vs Button Components
+- **Link Component:** No `variant` prop, used for navigation
+- **Button Component:** Supports `variant` prop for styled buttons/links
+- **Usage:** Use Button for styled external/internal links that need variants
+
+### MDX Configuration
+- **Package:** next-mdx-remote/rsc (React Server Components)
+- **Parser:** gray-matter for frontmatter
+- **Rendering:** Server-side compilation in async components
+- **Styling:** @tailwindcss/typography prose classes
+
+---
+
+## Current Site Structure
+
+```
+marktornga.com/
+├── / (Homepage)
+│   ├── Hero section
+│   └── Featured Projects (DeerAI)
+│
+├── /portfolio (Portfolio Listing)
+│   └── Grid of all projects
+│
+├── /portfolio/deeraitrackingresponse (Project Detail)
+│   ├── Hero with image
+│   ├── MDX content
+│   └── Tech stack & links
+│
+├── /about (Resume with Dial)
+│   ├── Interactive semicircle dial
+│   ├── 4 resume detail levels
+│   └── Social links
+│
+└── /blog (Not implemented yet)
+```
+
+---
+
+## What's Next: Remaining Phases
+
+### Phase 6: Blog Section (Next Priority)
+1. Create blog listing page (`app/blog/page.tsx`)
+2. Create blog post detail page (`app/blog/[slug]/page.tsx`)
+3. Migrate 2 existing posts from salvage folder
+4. Create blog components (BlogCard, BlogGrid)
+5. Add reading time estimates
+6. Add tags/categories filtering
+
+### Phase 7: Polish & Optimization
+1. SEO optimization (metadata, OG images)
+2. Performance audit (Lighthouse)
+3. Add more projects to portfolio
+4. Analytics setup (Google Analytics 4)
+5. Error pages (404, 500)
+6. Loading states
+7. Accessibility audit
+
+---
+
+## How to Continue Development
+
+### Local Development
+```bash
+# Install dependencies (if needed)
+npm install
+
+# Start dev server
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server locally
+npm start
+```
+
+### Deployment
+```bash
+# Deploy to Vercel production
+vercel --prod
+
+# Or just push to GitHub
+git add .
+git commit -m "Your commit message"
+git push origin main
+# Vercel auto-deploys from main branch
+```
+
+### Domain Management
+- **DNS:** Managed in AWS Route 53
+- **Vercel:** Custom domains configured
+- **SSL:** Automatically provisioned by Vercel
+
+---
+
+## Known Issues / Technical Debt
+
+1. **Resume Content:** Placeholder content in About page needs real experience/education details
+2. **Blog Section:** Not yet implemented (Phase 6)
+3. **SEO:** No metadata for portfolio pages yet
+4. **Analytics:** Not configured
+5. **Error Pages:** Using default Next.js error pages
+6. **More Projects:** Only one project (DeerAI) in portfolio
+7. **Images:** Need to optimize and add more project screenshots
+
+---
+
+## Content to Add
+
+### Resume (app/about/page.tsx)
+- Real work experience with dates and accomplishments
+- Actual education details
+- More detailed project descriptions
+- Additional skills and technologies
+
+### Portfolio
+- Add more projects from GitHub
+- Add screenshots/demos for projects
+- Write comprehensive MDX content for each project
+
+### Blog
+- Migrate 2 posts from salvage folder:
+  - 2020-01-20-amaryllis.md
+  - 2020-07-05-skytimelapse.md
+- Write new posts (Steve Zissou/Percy Fawcett connection mentioned in goals)
+
+---
+
+## Important URLs
+
+- **Production Site:** https://marktornga.com
+- **Vercel Dashboard:** https://vercel.com/mark-torngas-projects/marktorngadotcom
+- **GitHub Repo:** https://github.com/mtornga/marktorngadotcom
+- **LinkedIn:** https://linkedin.com/in/marktornga
+- **Domain Registrar:** (Check Route 53)
+
+---
+
+## Environment & Accounts
+
+### Vercel
+- **Account:** Logged in via CLI
+- **Project:** mark-torngas-projects/marktorngadotcom
+- **CLI:** Installed globally (`npm install -g vercel`)
+
+### AWS
+- **Route 53:** DNS configured
+- **Nameservers:** Route 53 (ns-798.awsdns-35.net, etc.)
+- **A Records:** Both root and www pointing to 76.76.21.21
+
+### GitHub
+- **Repo:** mtornga/marktorngadotcom
+- **Branch:** main
+- **Auto-deploy:** Enabled via Vercel integration
+
+---
+
+## Quick Reference Commands
+
+```bash
+# Development
+npm run dev              # Start dev server
+npm run build            # Build for production
+npm run start            # Start production server
+npm run lint             # Run ESLint
+
+# Vercel
+vercel                   # Deploy to preview
+vercel --prod            # Deploy to production
+vercel domains ls        # List domains
+vercel logs              # View deployment logs
+
+# Git
+git add .
+git commit -m "message"
+git push origin main     # Triggers Vercel auto-deploy
+```
+
+---
+
+## Session Summary
+
+This session was highly productive! We went from Phase 2 completion to a fully deployed production site. Key achievements:
+
+1. ✅ Built complete portfolio section with MDX support
+2. ✅ Created comprehensive DeerAI project content
+3. ✅ Designed and implemented interactive resume dial
+4. ✅ Built About page with progressive disclosure
+5. ✅ Deployed to Vercel production
+6. ✅ Configured custom domain with DNS
+7. ✅ Site is LIVE at marktornga.com
+
+The site now has a strong foundation with a portfolio, about page, and production infrastructure. The next developer can focus on adding more content (blog posts, projects, resume details) and polishing the existing features.
+
+---
+
+**Status:** 🚀 LIVE IN PRODUCTION
+**Next Steps:** Add blog section (Phase 6) or polish existing pages
+**Ready for:** Content creation, additional projects, blog posts
+
+---
+
+*Last Updated: December 16, 2025*
+*Session Duration: Full session from Phase 3 → Production deployment*
+*Developer: Claude Sonnet 4.5 via Claude Code*
