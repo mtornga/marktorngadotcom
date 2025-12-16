@@ -1,0 +1,5 @@
+Primary purpose is to aggrandize me, Mark Tornga
+Also a project showcase. I have some old ones in /marktorngadotcom-salvage/ and I am working on /repos/deeraitrackingresponse now.
+Also a blog of sorts. I have an idea for a post about how Steve Zissou is based on Percy Fawcett.
+
+marktornga.com is currently online but uses an old framework i don't like anymore. The assets are salvaged in /marktorngadotcom-salvage/

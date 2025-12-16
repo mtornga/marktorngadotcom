@@ -1,0 +1,104 @@
+---
+title: "DeerAI Tracking Response"
+description: "A full-stack spatial intelligence platform for wildlife management using computer vision, real-time tracking, and autonomous deterrent systems"
+date: "2024-12-16"
+featured: true
+heroImage: "/images/projects/deer-ai-tracking-hero.png"
+tags: ["Computer Vision", "PyTorch", "YOLO", "Robotics", "Real-time Tracking", "AWS"]
+github: "https://github.com/mtornga/DeerAITrackingResponse"
+status: "Active Development"
+---
+
+# DeerAI Tracking Response
+
+A wildlife management platform that transforms property protection through spatial intelligence. Built to detect, track, and deter deer and other animals using computer vision, Kalman filtering, and autonomous ground vehicles.
+
+## The Challenge
+
+Property owners face constant wildlife intrusion damaging gardens, crops, and landscaping. Traditional deterrents are static and ineffective. Animals quickly learn to ignore them.
+
+The solution? **Dynamic, intelligent response.**
+
+## System Architecture
+
+### Spatial Intelligence Pipeline
+
+1. **Detection** → MegaDetector v5 & custom YOLOv8n models identify wildlife in each frame
+2. **Tracking** → Kalman filter + appearance embeddings maintain identity across occlusions
+3. **Localization** → AprilTag homography converts pixel coordinates to real-world positions (feet)
+4. **Behavior Analysis** → Classify posture, speed, direction, and intent
+5. **Trajectory Forecasting** → Predict paths and route deterrent systems
+
+### Dual-Environment Development
+
+**Indoor Tabletop (Rapid Iteration)**
+- 24"×30" test environment with Wyze v2 + Reolink E1 cameras
+- CuteBot Pro unmanned ground vehicle (UGV)
+- AprilTag calibration for precision coordinate mapping
+- Iterate detection, tracking, and routing algorithms safely
+
+**Outdoor Production**
+- 4-5 Reolink cameras covering property perimeter
+- Real-time RTSP stream processing
+- GPU-accelerated inference on Ubuntu server (GTX 3080)
+- Coordinate mapping across entire property
+
+## Technical Stack
+
+- **Computer Vision**: OpenCV, PyTorch, Ultralytics YOLO, MegaDetector v5
+- **Tracking**: Kalman filtering, Hungarian algorithm, MegaDescriptor embeddings
+- **Cameras**: Wyze v2, Reolink E1 Zoom, Reolink Duo 3 PoE
+- **Robotics**: CuteBot Pro (Micro:bit v2), custom BLE control
+- **Infrastructure**: AWS S3, Samba shared storage, tmux monitoring dashboards
+- **Calibration**: AprilTags (tag36h11 family)
+
+## Key Features
+
+### Real-Time Detection & Tracking
+MegaDetector provides robust animal detection. Custom YOLOv8n models fine-tuned for local species and lighting conditions. Appearance embeddings ensure consistent ID across frames even with occlusions.
+
+### Precision Localization
+AprilTag-based homography transforms camera pixels into yard coordinates (x_ft, y_ft). Know exactly where animals are, not just what they look like.
+
+### Autonomous Response
+Route UGVs to intercept predicted trajectories. Activate targeted deterrents (lights, sound, motion) exactly when and where needed.
+
+### Continuous Retraining Loop
+Drop new footage into the pipeline. Auto-generate draft labels. Correct and retrain. Quality gates enforce AP50, recall, and latency thresholds before deployment.
+
+## Workflow
+
+```bash
+# Data ingestion
+make frames       # Extract frames from raw clips
+make autolabel    # Generate YOLO draft labels
+make qc           # Validate dataset integrity
+make split        # Train/val/test splits
+
+# Training & evaluation
+make train        # YOLOv8n with locked hyperparameters
+make eval         # Metrics + pytest quality gates
+
+# Deployment
+make export       # ONNX/TorchScript for edge inference
+```
+
+## Inspiration
+
+Based on the University of Minnesota's **"Geofenced Unmanned Aerial Robotic Defender for Deer Detection and Deterrence (GUARD)"** research. Adapted for ground-based systems with enhanced tracking and behavior analysis.
+
+## Current Status
+
+**Active development.** Indoor tabletop system operational with functional detection, tracking, and UGV routing. Outdoor deployment in progress with multi-camera calibration and deterrent integration.
+
+## What's Next
+
+- Multi-target trajectory prediction
+- Behavior state classification (grazing, alert, fleeing)
+- Coordinated multi-UGV swarm control
+- Event highlight reels with automated video generation
+- Integration with smart home systems (HomeKit, Home Assistant)
+
+---
+
+*This is not just object detection. This is spatial intelligence.*

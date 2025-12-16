@@ -1,0 +1,9 @@
+This "neo-brutalist" site: https://gemini.google.com/share/b086dc0eedf7
+Also see neobrutalistsite.mp4
+this was their prompt "Prompt: Make a neobrutalist webpage, make it extremely creative, as far as possible, push the limits. Add smooth scroll animations, add fancy colors and tailwind css styles. Make it responsive. title of the page is dorksense"
+
+Cool stuff like lite-tracker - https://github.com/ImFusionGmbH/lite-tracker
+https://x.com/mertkaraoglu/status/1988340750661415359
+
+This cursor-following face thing: https://x.com/fofrAI/status/1986076417809928568
+https://replicate.com/kylan02/face-looker
