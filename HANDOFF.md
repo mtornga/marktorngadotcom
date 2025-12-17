@@ -110,7 +110,7 @@
    - About link already in Header navigation
    - Ready to use at `/about`
 
-### Phase 4.5: About Page Content Population - COMPLETE ✓ (NEW)
+### Phase 4.5: About Page Content Population - COMPLETE ✓
 
 *Session Date: 2025-12-16/17*
 
@@ -157,7 +157,6 @@ Replaced all placeholder content in the About page with real resume data from `R
 
 ### Phase 5: Deployment to Vercel - COMPLETE ✓
 
-
 1. **Git Repository**
    - Committed all code with proper commit messages
    - Pushed to GitHub: https://github.com/mtornga/marktorngadotcom
@@ -188,6 +187,61 @@ Replaced all placeholder content in the About page with real resume data from `R
    - **Production**: https://marktornga.com
    - **WWW**: https://www.marktornga.com
    - **Vercel**: https://marktorngadotcom.vercel.app
+
+### Phase 6: User Feedback Implementation - COMPLETE ✓ (NEW)
+
+*Session Date: 2025-12-17*
+
+Implemented comprehensive feedback addressing UX, content, and SEO issues.
+
+1. **Blog Section Created** (`app/blog/`)
+   - Blog listing page at `/blog` with post grid
+   - Dynamic post detail pages at `/blog/[slug]`
+   - Migrated 2 posts from salvage folder:
+     - `amaryllis.mdx` - Timelapse of flower blooming
+     - `skytimelapse.mdx` - Raspberry Pi + Ansible automation project
+   - Added blog content functions to `lib/content.ts`
+   - Copied post images to `public/images/posts/`
+   - Navigation updated: "Blog" → "Writing"
+
+2. **Homepage Hero Redesign** (`app/page.tsx`)
+   - New positioning: "Data + AI Leader"
+   - Career-focused copy: "Enterprise data architecture. Analytics platforms. Computer vision + robotics."
+   - Availability statement: "Currently doing data architecture consulting. Open to full-time roles or consulting engagements."
+   - Primary CTA changed to "Work With Me" → `/contact`
+
+3. **Portfolio Expansion** - Added 4 new project pages:
+   - `microsoft-fabric-data-estate.mdx` - Fortune 500 data modernization
+   - `llm-learning-games.mdx` - Enterprise AI training games
+   - `fire-protection-lead-intelligence.mdx` - LLM lead categorization system
+   - `cybersecurity-risk-dashboard.mdx` - Board-level security metrics
+
+4. **Contact Page Created** (`app/contact/page.tsx`)
+   - Email CTA: mtornga@gmail.com
+   - LinkedIn connection link
+   - "What I Can Help With" section detailing services:
+     - Data Architecture & Strategy
+     - Analytics & BI
+     - AI/ML Implementation
+     - Team Building
+   - GitHub profile link
+   - Added "Contact" to navigation
+
+5. **About Page Fallback Fix** (`app/about/page.tsx`)
+   - Changed default dial level from 0 (Minimal) to 2 (Medium)
+   - Now shows meaningful content on initial render before JS hydrates
+
+6. **Custom 404 Page** (`app/not-found.tsx`)
+   - Neo-brutalist styled 404 page
+   - Navigation options: Home, Portfolio, Contact
+
+7. **SEO & Metadata Updates** (`app/layout.tsx`)
+   - Updated title: "Mark Tornga | Data + AI Leader"
+   - Career-focused description
+   - Added keywords meta tag
+   - Added metadataBase for proper OG URL resolution
+   - OG image placeholder (needs proper design)
+   - Twitter card configuration
 
 ---
 
@@ -329,45 +383,54 @@ Replaced all placeholder content in the About page with real resume data from `R
 ```
 marktornga.com/
 ├── / (Homepage)
-│   ├── Hero section
+│   ├── Hero section with career positioning
+│   ├── "Work With Me" CTA
 │   └── Featured Projects (DeerAI)
 │
 ├── /portfolio (Portfolio Listing)
-│   └── Grid of all projects
+│   └── Grid of 5 projects
 │
-├── /portfolio/deeraitrackingresponse (Project Detail)
-│   ├── Hero with image
-│   ├── MDX content
-│   └── Tech stack & links
+├── /portfolio/[slug] (Project Details)
+│   ├── deeraitrackingresponse
+│   ├── microsoft-fabric-data-estate
+│   ├── llm-learning-games
+│   ├── fire-protection-lead-intelligence
+│   └── cybersecurity-risk-dashboard
+│
+├── /blog (Writing)
+│   └── Grid of blog posts
+│
+├── /blog/[slug] (Post Details)
+│   ├── amaryllis
+│   └── skytimelapse
 │
 ├── /about (Resume with Dial)
 │   ├── Interactive semicircle dial
-│   ├── 4 resume detail levels
+│   ├── 4 resume detail levels (defaults to Medium)
 │   └── Social links
 │
-└── /blog (Not implemented yet)
+├── /contact (Contact Page)
+│   ├── Email CTA
+│   ├── LinkedIn link
+│   ├── Services offered
+│   └── GitHub link
+│
+└── /not-found (Custom 404)
 ```
 
 ---
 
 ## What's Next: Remaining Phases
 
-### Phase 6: Blog Section (Next Priority)
-1. Create blog listing page (`app/blog/page.tsx`)
-2. Create blog post detail page (`app/blog/[slug]/page.tsx`)
-3. Migrate 2 existing posts from salvage folder
-4. Create blog components (BlogCard, BlogGrid)
-5. Add reading time estimates
-6. Add tags/categories filtering
-
-### Phase 7: Polish & Optimization
-1. SEO optimization (metadata, OG images)
+### Phase 7: Polish & Optimization (Next Priority)
+1. **OG Image**: Create proper 1200x630 OG image (currently using avatar placeholder)
 2. Performance audit (Lighthouse)
-3. Add more projects to portfolio
-4. Analytics setup (Google Analytics 4)
-5. Error pages (404, 500)
-6. Loading states
-7. Accessibility audit
+3. Analytics setup (Google Analytics 4)
+4. Loading states and skeleton components
+5. Accessibility audit
+6. Add more blog posts
+7. Add reading time estimates to blog posts
+8. Add tags/categories filtering to blog
 
 ---
 
@@ -410,33 +473,32 @@ git push origin main
 ## Known Issues / Technical Debt
 
 1. ~~**Resume Content:** Placeholder content in About page needs real experience/education details~~ ✓ RESOLVED (Phase 4.5)
-2. **Blog Section:** Not yet implemented (Phase 6)
-3. **SEO:** No metadata for portfolio pages yet
+2. ~~**Blog Section:** Not yet implemented (Phase 6)~~ ✓ RESOLVED (Phase 6)
+3. ~~**SEO:** No metadata for portfolio pages yet~~ ✓ RESOLVED (Phase 6)
 4. **Analytics:** Not configured
-5. **Error Pages:** Using default Next.js error pages
-6. **More Projects:** Only one project (DeerAI) in portfolio as MDX page (others shown in About page)
-7. **Images:** Need to optimize and add more project screenshots
+5. ~~**Error Pages:** Using default Next.js error pages~~ ✓ RESOLVED (Phase 6)
+6. ~~**More Projects:** Only one project (DeerAI) in portfolio as MDX page~~ ✓ RESOLVED (Phase 6 - now 5 projects)
+7. **OG Image:** Using avatar as placeholder - needs proper 1200x630 designed image
+8. **Project Hero Images:** Most projects don't have hero images yet
 
 ---
 
 ## Content to Add
 
-### Portfolio (Priority)
-- Add LLM Interaction Learning Games as full MDX project page
-- Add Fire Protection Lead Intelligence as full MDX project page
+### Portfolio
+- ~~Add LLM Interaction Learning Games as full MDX project page~~ ✓ DONE
+- ~~Add Fire Protection Lead Intelligence as full MDX project page~~ ✓ DONE
 - Add Reporting Strategy Catalog Platform as project
-- Add screenshots/demos for projects
+- Add hero images/screenshots for projects (currently only DeerAI has one)
 
 ### Blog
-- Add more projects from GitHub
-- Add screenshots/demos for projects
-- Write comprehensive MDX content for each project
-
-### Blog
-- Migrate 2 posts from salvage folder:
-  - 2020-01-20-amaryllis.md
-  - 2020-07-05-skytimelapse.md
+- ~~Migrate 2 posts from salvage folder~~ ✓ DONE
 - Write new posts (Steve Zissou/Percy Fawcett connection mentioned in goals)
+- Add more maker/technical posts
+
+### Design Assets
+- Create proper OG image (1200x630) for social sharing
+- Create project thumbnail images
 
 ---
 
@@ -504,22 +566,26 @@ This session was highly productive! We went from Phase 2 completion to a fully d
 6. ✅ Configured custom domain with DNS
 7. ✅ Site is LIVE at marktornga.com
 8. ✅ **Populated About page with real resume content** (Phase 4.5 - December 17)
-   - 3 work positions with detailed accomplishments
-   - Education & certifications
-   - 3 featured AI/CV projects
-   - Manager testimonials
+9. ✅ **Implemented user feedback** (Phase 6 - December 17)
+   - Fixed blog 404 - created full blog section with 2 migrated posts
+   - Updated homepage hero with career-focused positioning
+   - Added 4 more portfolio projects (now 5 total)
+   - Created contact page with services and CTAs
+   - Fixed About page to default to Medium content
+   - Created custom 404 page
+   - Updated SEO metadata
 
-The site now has a strong foundation with a portfolio, fully populated about page, and production infrastructure. The next developer can focus on adding the blog section, more portfolio project pages, and SEO polish.
+The site now has a complete foundation with portfolio, blog, about, and contact pages. Career positioning emphasizes data architecture consulting availability.
 
 ---
 
-**Status:** 🚀 LIVE IN PRODUCTION
-**Next Steps:** Add blog section (Phase 6) or add more portfolio projects as MDX pages
-**Ready for:** Blog posts, additional project MDX pages, SEO optimization
+**Status:** 🚀 LIVE IN PRODUCTION (ready to deploy changes)
+**Next Steps:** Create proper OG image, add project hero images, GA4 setup
+**Ready for:** More blog posts, additional projects, performance optimization
 
 ---
 
 *Last Updated: December 17, 2025*
-*Latest Session: Phase 4.5 - About Page Content Population*
-*Developer: Claude (Gemini CLI)*
+*Latest Session: Phase 6 - User Feedback Implementation*
+*Developer: Claude Code*
 

@@ -1,0 +1,71 @@
+---
+title: "Microsoft Fabric Data Estate"
+description: "Enterprise data modernization: migrating fragmented BI tools into a unified Microsoft Fabric platform for a Fortune 500 waterworks distributor"
+date: "2024-06-01"
+featured: false
+tags: ["Microsoft Fabric", "PySpark", "Power BI", "D365", "Data Engineering", "Enterprise"]
+status: "Production"
+---
+
+# Microsoft Fabric Data Estate
+
+Led enterprise BI modernization for Core & Main, a Fortune 500 waterworks distributor, building their data ecosystem on Microsoft Fabric from the ground up.
+
+## The Challenge
+
+A fragmented landscape of disconnected BI tools, spreadsheets, and manual processes. Analysts spending more time finding and preparing data than analyzing it. No single source of truth.
+
+The goal: **Accelerate BI maturity by a decade in under two years.**
+
+## What We Built
+
+### Unified Data Platform
+
+Migrated disparate data sources into a cohesive Microsoft Fabric lakehouse architecture:
+
+- **Bronze Layer**: Raw data ingestion from D365 Finance & Operations, legacy systems, and external sources
+- **Silver Layer**: Cleaned, validated, and enriched datasets with consistent schemas
+- **Gold Layer**: Business-ready analytics tables optimized for Power BI consumption
+
+### D365 Finance & Operations Integration
+
+The most complex integration challenge: 200+ tables from Microsoft's ERP system.
+
+- Deep-dive research into D365 data models and relationships
+- Built PySpark pipelines for incremental data extraction
+- Implemented change data capture for near-real-time updates
+- Created semantic models mapping ERP concepts to business terminology
+
+### Self-Service Analytics
+
+Enabled hundreds of analysts to self-serve governed data:
+
+- Semantic models with row-level security
+- Certified Power BI datasets
+- Data catalog with business glossary
+- Training programs for self-service reporting
+
+## Technical Stack
+
+- **Platform**: Microsoft Fabric (Lakehouse, Data Factory, Power BI)
+- **Processing**: PySpark, Dataflows Gen2
+- **Source Systems**: D365 Finance & Operations, legacy databases, Excel
+- **Governance**: Purview integration, RLS, certification workflows
+- **Orchestration**: Fabric pipelines with dependency management
+
+## Impact
+
+- Consolidated 15+ disconnected data sources into unified lakehouse
+- Reduced report development time from weeks to days
+- Enabled C-suite dashboards with trusted, governed metrics
+- Built foundation for AI/ML initiatives (see other projects)
+
+## Lessons Learned
+
+Enterprise data modernization isn't just technical—it's organizational change. The hardest part wasn't building pipelines; it was getting stakeholders aligned on definitions, governance, and ownership.
+
+**Key insight**: Start with high-visibility quick wins to build momentum, then tackle the complex integrations once you've established credibility.
+
+---
+
+*From fragmented chaos to unified intelligence.*

@@ -7,7 +7,8 @@ import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 
 export default function AboutPage() {
-  const [level, setLevel] = useState(0);
+  // Default to Medium (2) so there's meaningful content on initial render
+  const [level, setLevel] = useState(2);
 
   return (
     <Container size="lg">

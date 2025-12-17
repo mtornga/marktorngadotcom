@@ -1,0 +1,97 @@
+---
+title: "Fire Protection Lead Intelligence"
+description: "LLM-powered system categorizing 1M+ annual construction bids to identify fire protection sales opportunities with 85% cost reduction"
+date: "2024-08-01"
+featured: false
+tags: ["Azure AI", "Microsoft Fabric", "Python", "LLM", "Sales Intelligence"]
+status: "Production"
+---
+
+# Fire Protection Lead Intelligence
+
+Built an LLM-powered system to automatically categorize over one million annual construction bids, identifying high-value fire protection opportunities that sales teams would otherwise miss.
+
+## The Business Problem
+
+Core & Main sells fire protection equipment (sprinkler systems, fire pumps, alarms) to contractors working on commercial construction projects. The challenge: finding the right projects in a sea of data.
+
+**The Numbers**:
+- 1M+ annual bid postings from construction databases
+- 2-3% are relevant fire protection opportunities
+- Manual review: impossible at scale
+- Missing opportunities: real revenue loss
+
+Traditional keyword filtering caught obvious matches but missed nuanced cases. "Hospital renovation" might need fire protection. "Hospital equipment procurement" definitely doesn't.
+
+## Two-Pass LLM Architecture
+
+The key insight: **Use cheap models for filtering, expensive models for precision.**
+
+### Pass 1: Bulk Filtering (GPT-4o-mini)
+- Process all 1M+ bids through fast, inexpensive model
+- Simple prompt: "Could this project involve fire protection systems?"
+- Binary classification: Maybe (keep) or No (discard)
+- Reduces dataset by ~90% at minimal cost
+
+### Pass 2: Deep Analysis (GPT-4o)
+- Remaining ~100K bids get detailed analysis
+- Structured extraction: project type, scope, timeline, location
+- Confidence scoring with reasoning explanation
+- Fire protection relevance rating (1-5 scale)
+
+### Why Two Passes?
+
+| Approach | Cost per Million Bids | Accuracy |
+|----------|----------------------|----------|
+| All GPT-4o | $15,000+ | High |
+| All GPT-4o-mini | $150 | Medium |
+| Two-Pass Hybrid | $2,250 | High |
+
+**85% cost reduction** with equivalent accuracy to full GPT-4o processing.
+
+## Technical Implementation
+
+### Data Pipeline (Microsoft Fabric)
+
+```
+Bid Sources → Bronze (raw) → Silver (cleaned) → LLM Processing → Gold (enriched)
+```
+
+- Daily incremental ingestion from bid aggregator APIs
+- Deduplication and normalization in Silver layer
+- PySpark UDFs calling Azure AI Foundry endpoints
+- Results land in Gold layer with full lineage tracking
+
+### Prompt Engineering
+
+The prompts evolved through dozens of iterations. Key learnings:
+
+- **Be specific about edge cases**: "Hospital" without construction scope = no
+- **Provide examples**: Few-shot prompting improved edge case handling
+- **Request structured output**: JSON responses enable reliable parsing
+- **Ask for reasoning**: Chain-of-thought improves accuracy and enables auditing
+
+### Quality Monitoring
+
+- Weekly sample audits by sales team
+- Precision/recall tracking over time
+- A/B testing prompt variations
+- Cost-per-lead metrics
+
+## Business Impact
+
+- **Coverage**: 98% of relevant bids now identified (up from ~60% with keywords)
+- **Efficiency**: Sales team focuses on pre-qualified leads, not research
+- **ROI**: First quarter showed revenue attribution exceeding annual system cost
+- **Speed**: Daily lead delivery vs. weekly manual reports
+
+## Lessons Learned
+
+1. **Start with the economics**: Model architecture follows from cost constraints, not technical elegance
+2. **Ground truth is expensive**: Getting sales team to validate samples took more effort than building the system
+3. **Prompts are code**: Version control, testing, and iteration are essential
+4. **LLMs aren't magic**: They're pattern matchers. Garbage in, garbage out.
+
+---
+
+*Finding needles in haystacks at scale.*

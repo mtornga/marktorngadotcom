@@ -1,0 +1,85 @@
+---
+title: "LLM Interaction Learning Games"
+description: "Interactive games teaching enterprise teams how to work effectively with AI - from prompt engineering to understanding LLM capabilities"
+date: "2024-03-15"
+featured: false
+tags: ["Azure AI", "GPT-4", "JavaScript", "Enterprise Training", "LLM"]
+status: "Production"
+---
+
+# LLM Interaction Learning Games
+
+Built two interactive games to help enterprise teams develop practical AI skills—moving beyond "chat with a bot" to understanding how LLMs actually work in production systems.
+
+## The Problem
+
+Everyone talks about AI transformation, but most employees have no mental model for how to actually use LLMs effectively. They either:
+
+1. **Underuse**: Treat AI as a novelty, never integrating it into real workflows
+2. **Overuse**: Expect AI to magically solve problems without proper setup
+3. **Misuse**: Apply AI to tasks where traditional approaches work better
+
+We needed hands-on training that builds intuition, not just awareness.
+
+## Game 1: Prompt Engineering Challenge
+
+**Concept**: Parse complex, messy data using only prompts. No code allowed.
+
+Players receive real business documents—purchase orders, invoices, contracts—and must extract structured data using only natural language prompts to an LLM.
+
+### Mechanics
+
+- **Levels**: Progress from simple extraction to complex reasoning tasks
+- **Scoring**: Speed + accuracy + prompt efficiency (fewer tokens = more points)
+- **Leaderboard**: Competitive element drives engagement and knowledge sharing
+
+### What It Teaches
+
+- Prompt structure and specificity matter enormously
+- Chain-of-thought prompting for complex reasoning
+- When to use few-shot examples vs. detailed instructions
+- Cost awareness (token usage = real money at scale)
+
+## Game 2: Human vs. OCR Race
+
+**Concept**: Compete against AI on data entry tasks.
+
+Players race against GPT-4 Vision to extract data from scanned documents. Sometimes humans win. Sometimes AI wins. That's the point.
+
+### Mechanics
+
+- Side-by-side interface: human input vs. AI output
+- Real scanned documents with varying quality
+- Accuracy scoring with penalty for errors
+- Time pressure creates authentic workflow experience
+
+### What It Teaches
+
+- AI has specific strengths (consistency, speed on clear docs)
+- Humans have specific strengths (reasoning about ambiguous cases)
+- Quality of source material dramatically affects AI performance
+- Human-in-the-loop validation isn't overhead—it's essential
+
+## Technical Implementation
+
+- **Frontend**: JavaScript with real-time scoring
+- **Backend**: Azure AI Foundry for GPT-4 and GPT-4 Vision APIs
+- **Documents**: Real (anonymized) business documents from production systems
+- **Deployment**: Internal webapp accessible to all employees
+
+## Business Impact
+
+- **Engagement**: 85% completion rate across 200+ participants
+- **Knowledge Retention**: Post-training assessments showed 3x improvement in prompt quality
+- **Cultural Shift**: Teams started identifying AI opportunities in their own workflows
+- **Cost Awareness**: Reduced unnecessary API calls by teaching token economics
+
+## Design Philosophy
+
+Games work because they make abstract concepts concrete. Instead of telling people "prompts matter," we let them discover it through failure and iteration.
+
+The competitive element isn't about winners and losers—it's about creating shared vocabulary and experiences that teams reference in real work conversations.
+
+---
+
+*Learning by playing. Understanding by doing.*

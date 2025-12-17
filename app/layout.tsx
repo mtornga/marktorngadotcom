@@ -19,20 +19,36 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Mark Tornga | Highly Extensible Human",
-  description: "Portfolio and blog of Mark Tornga - software engineer, maker, and highly extensible human based in St. Louis, Missouri.",
+  metadataBase: new URL("https://marktornga.com"),
+  title: "Mark Tornga | Data + AI Leader",
+  description: "Data architecture consulting. Enterprise analytics platforms, AI/ML implementation, and computer vision systems. Open to full-time roles or consulting.",
+  keywords: ["data architecture", "data engineering", "Microsoft Fabric", "Power BI", "AI", "machine learning", "computer vision", "consulting", "St. Louis"],
+  authors: [{ name: "Mark Tornga" }],
   openGraph: {
-    title: "Mark Tornga | Highly Extensible Human",
-    description: "Portfolio and blog of Mark Tornga - software engineer, maker, and highly extensible human.",
+    title: "Mark Tornga | Data + AI Leader",
+    description: "Data architecture consulting. Enterprise analytics platforms, AI/ML implementation, and computer vision systems.",
     url: "https://marktornga.com",
     siteName: "Mark Tornga",
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: "https://marktornga.com/images/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Mark Tornga - Data + AI Leader",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mark Tornga | Highly Extensible Human",
-    description: "Portfolio and blog of Mark Tornga - software engineer, maker, and highly extensible human.",
+    title: "Mark Tornga | Data + AI Leader",
+    description: "Data architecture consulting. Enterprise analytics platforms, AI/ML implementation, and computer vision systems.",
+    images: ["https://marktornga.com/images/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 

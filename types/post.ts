@@ -1,19 +1,13 @@
-export interface Post {
-  slug: string;
-  title: string;
-  date: string;
-  excerpt: string;
-  featured_image?: string;
-  tags: string[];
-  content: string;
-  readingTime: string;
-}
-
 export interface PostFrontMatter {
   title: string;
+  description?: string;
   date: string;
+  heroImage?: string;
+  tags?: string[];
+}
+
+export interface Post {
   slug: string;
-  excerpt: string;
-  featured_image?: string;
-  tags: string[];
+  frontmatter: PostFrontMatter;
+  content: string;
 }
