@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mark Tornga - V3</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #FAFAFA;
+            --text: #1A1A1A;
+            --primary: #FF006E;
+            --accent: #00F5FF;
+            --border: #1A1A1A;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            background: white;
+            width: 8.5in;
+            height: 11in;
+            padding: 0.5in;
+        }
+
+        .leaflet-container {
+            width: 7.5in;
+            height: 5in;
+            border: 6px solid var(--border);
+            padding: 2rem;
+            position: relative;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            line-height: 0.9;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            flex-grow: 1;
+        }
+
+        .main-text {
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .main-text p {
+            margin-bottom: 0.8rem;
+        }
+
+        .highlight-box {
+            background-color: #000;
+            color: #FFF;
+            padding: 1rem;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 6px 6px 0 var(--accent);
+        }
+
+        .problem-statement {
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-left: 4px solid var(--primary);
+            padding-left: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .solution {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-left: 3px dashed var(--border);
+            padding-left: 1rem;
+        }
+
+        .qr-code img {
+            width: 120px;
+            height: 120px;
+            border: 4px solid var(--border);
+            margin-bottom: 0.5rem;
+        }
+
+        .cta-link {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--text);
+            background: var(--accent);
+            padding: 0.25rem 0.5rem;
+            border: 2px solid var(--border);
+            display: inline-block;
+        }
+
+        .footer {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-top: 4px solid var(--border);
+            padding-top: 0.75rem;
+        }
+
+        .logo-area {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            line-height: 0.9;
+        }
+
+        .tagline {
+            font-size: 0.8rem;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                margin: 0;
+            }
+
+            .leaflet-container {
+                margin: 0.5in auto;
+            }
+
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="leaflet-container">
+        <div class="content-grid">
+            <div class="main-content">
+                <div class="highlight-box">
+                    GOOD INTENTIONS,<br>SLOPPY LEGISLATION.
+                </div>
+                <div class="main-text">
+                    <p>The County Council passed a messy ordinance. They forgot one thing:</p>
+                    <div class="problem-statement" style="font-size: 1.4rem;">
+                        A MEANS TEST.
+                    </div>
+                    <p>Without it, we are bleeding <strong>$30 million a year</strong> to property owners who don't need
+                        the help. That's money taken directly from schools, police, and roads.</p>
+                    <p class="solution">Stop the sloppy legistlation.</p>
+                </div>
+            </div>
+            <div class="sidebar">
+                <div class="qr-code"><img
+                        src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://marktornga.com/countycouncil"
+                        alt="QR Code"></div>
+                <div style="font-weight: 700; font-size: 0.8rem; margin-bottom: 0.25rem;">SCAN TO LEARN MORE</div>
+                <div class="cta-link">marktornga.com</div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="logo-area">MARK TORNGA<br><span style="color: var(--primary);">FOR COUNTY COUNCIL</span></div>
+            <div class="tagline">COMMON SENSE. <br>FAIR TAXES. <br>REAL DATA.</div>
+        </div>
+    </div>
+</body>
+
+</html>
