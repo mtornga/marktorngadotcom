@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Inter } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import VisitTracker from "@/components/analytics/VisitTracker";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -60,6 +62,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${spaceGrotesk.variable} ${inter.variable} antialiased`}>
+        <Suspense fallback={null}>
+          <VisitTracker />
+        </Suspense>
         <Header />
         {children}
         <Footer />
