@@ -264,7 +264,7 @@ function LongResume() {
             </p>
             <ul className="list-disc list-inside space-y-1 text-neo-text/80">
               <li>Designated 2020 Slalom-Tableau Rockstar; led a 420-attendee analytics webinar series</li>
-              <li>Built cybersecurity risk dashboard for $16B insurance company board (22 metrics, 16 data sources)</li>
+              <li>Led board-ready cybersecurity dashboard delivery for a global ~$15B insurance enterprise (23 metrics, 20 workflows, 17 dashboards, 16 data sources)</li>
               <li>Reduced insurance claims backlog from 23,000 to 8,000 in 90 days with automated SQL solutions</li>
               <li>1st place, 2023 Slalom D&A Hackathon (Python, Google Maps API, BigQuery, Tableau)</li>
             </ul>
