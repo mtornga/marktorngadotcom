@@ -7,9 +7,9 @@ export default function Home() {
   const featuredProjects = getFeaturedProjects();
 
   return (
-    <main className="py-20 px-4">
+    <main className="home-page px-4">
       {/* Hero Section */}
-      <div className="container min-h-[80vh] flex items-center justify-center mb-32">
+      <div className="container home-hero flex items-center justify-center">
         <Card className="max-w-4xl mx-auto text-center" padding="lg">
           <h1 className="text-neo-primary mb-6 transform -rotate-1">
             Mark Tornga
@@ -39,8 +39,8 @@ export default function Home() {
 
       {/* Featured Projects Section */}
       {featuredProjects.length > 0 && (
-        <div className="container">
-          <div className="mb-16 text-center">
+        <div className="container home-featured">
+          <div className="home-featured-intro text-center">
             <h2 className="text-neo-accent mb-4 transform rotate-1">
               Featured Work
             </h2>
@@ -48,7 +48,9 @@ export default function Home() {
               Selected projects that push boundaries and explore new possibilities.
             </p>
           </div>
-          <ProjectGrid projects={featuredProjects} />
+          <div className="home-featured-grid">
+            <ProjectGrid projects={featuredProjects} />
+          </div>
         </div>
       )}
     </main>

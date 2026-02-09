@@ -8,7 +8,7 @@ const socialLinks = [
 
 export default function Footer() {
   return (
-    <footer className="border-t-4 border-neo-text bg-neo-surface py-12 mt-20">
+    <footer className="site-footer border-t-4 border-neo-text">
       <Container>
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Brand */}
