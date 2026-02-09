@@ -3,6 +3,7 @@ export interface ProjectFrontMatter {
   description: string;
   date: string;
   featured?: boolean;
+  href?: string;
   heroImage?: string;
   tags?: string[];
   github?: string;

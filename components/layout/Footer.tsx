@@ -13,9 +13,6 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Brand */}
           <div className="text-center md:text-left">
-            <p className="font-heading font-black text-xl text-neo-primary mb-2">
-              Mark Tornga
-            </p>
             <p className="text-sm text-gray-600">
               Highly extensible human
             </p>
@@ -37,7 +34,7 @@ export default function Footer() {
 
           {/* Copyright */}
           <div className="text-center md:text-right text-sm text-gray-600">
-            <p>&copy; {new Date().getFullYear()} Mark Tornga</p>
+            <p>&copy; {new Date().getFullYear()}</p>
             <p className="mt-1">St. Louis, Missouri</p>
           </div>
         </div>

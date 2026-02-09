@@ -71,7 +71,35 @@ export default function AITinkerersAgentMailPage() {
               <Badge variant="accent">YOLOv8</Badge>
               <Badge variant="primary">cron</Badge>
             </div>
+            <div className="mt-8 inline-block border-4 border-neo-text bg-white px-6 py-4 shadow-neo">
+              <p className="font-bold text-neo-text">
+                Presented at the Sketch Development office on February 4, 2026.
+              </p>
+              <a
+                href="https://www.linkedin.com/posts/sketch-development-services_we-had-another-great-ai-tinkerers-event-last-activity-7425298933364543488-SPsj?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAL14CoBlrx_f4ZZq0RPceDr7461jGy0qR0"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-block font-bold text-neo-primary underline hover:text-neo-accent"
+              >
+                View event post on LinkedIn
+              </a>
+            </div>
           </div>
+        </section>
+
+        {/* Presentation Photo */}
+        <section className="border-8 border-neo-text bg-white p-4 md:p-8 shadow-neo mb-12">
+          <h2 className="font-heading font-bold text-2xl md:text-3xl mb-4 text-neo-primary text-center">
+            Live at AI Tinkerers STL
+          </h2>
+          <p className="text-neo-text/70 text-center mb-6">
+            Full-size presentation photo from Sketch Development office, February 4, 2026.
+          </p>
+          <LightboxImage
+            src="/images/aitinkerers/MarkPresentsAgentMail1.jpeg"
+            alt="Mark presenting Agent Mail at AI Tinkerers STL at the Sketch Development office on February 4, 2026"
+            priority
+          />
         </section>
 
         {/* The Problem / My Situation */}
@@ -355,6 +383,12 @@ export default function AITinkerersAgentMailPage() {
               variant="accent"
             >
               My GitHub
+            </Button>
+            <Button
+              href="https://www.linkedin.com/posts/sketch-development-services_we-had-another-great-ai-tinkerers-event-last-activity-7425298933364543488-SPsj?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAL14CoBlrx_f4ZZq0RPceDr7461jGy0qR0"
+              variant="secondary"
+            >
+              AI Tinkerers LinkedIn Post
             </Button>
           </div>
           <p className="mt-8 text-neo-text/60">

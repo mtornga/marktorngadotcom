@@ -9,10 +9,11 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ project }: ProjectCardProps) {
   const { slug, frontmatter } = project;
-  const { title, description, heroImage, tags, status } = frontmatter;
+  const { title, description, href, heroImage, tags, status } = frontmatter;
+  const cardHref = href || `/portfolio/${slug}`;
 
   return (
-    <Link href={`/portfolio/${slug}`}>
+    <Link href={cardHref}>
       <Card className="group cursor-pointer h-full flex flex-col" padding="md">
         {/* Hero Image */}
         {heroImage && (
