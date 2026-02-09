@@ -1,9 +1,12 @@
 import { isIP } from "node:net";
 
 import {
+  isAsnExcluded,
+  isHighConfidenceAnonymizedTraffic,
   isIpExcluded,
   isLikelyBot,
   isLikelyPrefetch,
+  matchesNetworkPattern,
   normalizeHost,
   parseCommaList,
   parseUserAgent,
@@ -30,6 +33,8 @@ const allowedHosts = new Set(
     .filter((value): value is string => Boolean(value)),
 );
 const excludedIpPatterns = parseCommaList(process.env.VISIT_NOTIFY_EXCLUDE_IPS);
+const excludedAsns = parseCommaList(process.env.VISIT_NOTIFY_EXCLUDE_ASNS);
+const excludedNetworkPatterns = parseCommaList(process.env.VISIT_NOTIFY_EXCLUDE_NETWORK_PATTERNS);
 
 function safeString(value: unknown, maxLength: number): string | undefined {
   if (typeof value !== "string") {
@@ -261,6 +266,38 @@ export async function POST(request: Request): Promise<Response> {
 
   const geo = extractGeo(request.headers);
   const ipinfo = clientIp ? await lookupIpinfo(clientIp, process.env.IPINFO_TOKEN) : undefined;
+
+  if (isHighConfidenceAnonymizedTraffic(ipinfo)) {
+    console.info("[visit-notify] dropped high-confidence anonymized traffic", {
+      host,
+      path: payload.path,
+      asn: ipinfo?.asn,
+      asDomain: ipinfo?.asDomain,
+      org: ipinfo?.org,
+    });
+    return new Response(null, { status: 204 });
+  }
+
+  if (isAsnExcluded(ipinfo?.asn, excludedAsns)) {
+    console.info("[visit-notify] dropped excluded ASN", {
+      host,
+      path: payload.path,
+      asn: ipinfo?.asn,
+    });
+    return new Response(null, { status: 204 });
+  }
+
+  if (matchesNetworkPattern(ipinfo, excludedNetworkPatterns)) {
+    console.info("[visit-notify] dropped excluded network pattern", {
+      host,
+      path: payload.path,
+      asn: ipinfo?.asn,
+      asDomain: ipinfo?.asDomain,
+      org: ipinfo?.org,
+    });
+    return new Response(null, { status: 204 });
+  }
+
   const maskedIp = maskIp(clientIp);
   const hashedIp = hashIp(clientIp, process.env.VISIT_NOTIFY_HASH_SALT);
   const safeUtm = payload.utm ?? {};

@@ -1,6 +1,6 @@
 import { BlockList, isIP } from "node:net";
 
-import type { UserAgentInfo } from "@/lib/visit/types";
+import type { IpinfoEnrichment, UserAgentInfo } from "@/lib/visit/types";
 
 const BOT_PATTERN =
   /(bot|crawler|spider|slurp|bingpreview|facebookexternalhit|linkedinbot|headless|wget|curl|python-requests|postmanruntime|go-http-client|uptimerobot)/i;
@@ -43,6 +43,95 @@ export function parseCommaList(value: string | undefined): string[] {
     .split(",")
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+function normalizeAsn(raw: string): string | undefined {
+  const compact = raw.trim().toUpperCase();
+  if (!compact) {
+    return undefined;
+  }
+
+  const stripped = compact.startsWith("AS") ? compact.slice(2) : compact;
+  if (!/^\d+$/.test(stripped)) {
+    return undefined;
+  }
+
+  return `AS${stripped}`;
+}
+
+export function isAsnExcluded(asn: string | undefined, excludedAsns: string[]): boolean {
+  if (!asn || excludedAsns.length === 0) {
+    return false;
+  }
+
+  const normalized = normalizeAsn(asn);
+  if (!normalized) {
+    return false;
+  }
+
+  for (const candidate of excludedAsns) {
+    const normalizedCandidate = normalizeAsn(candidate);
+    if (normalizedCandidate === normalized) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function containsAny(source: string, needles: string[]): boolean {
+  return needles.some((needle) => source.includes(needle));
+}
+
+function normalizeNetworkText(ipinfo: IpinfoEnrichment | undefined): string {
+  if (!ipinfo) {
+    return "";
+  }
+
+  return [ipinfo.asName, ipinfo.asDomain, ipinfo.org, ipinfo.company]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+}
+
+export function matchesNetworkPattern(ipinfo: IpinfoEnrichment | undefined, patterns: string[]): boolean {
+  if (!ipinfo || patterns.length === 0) {
+    return false;
+  }
+
+  const networkText = normalizeNetworkText(ipinfo);
+  if (!networkText) {
+    return false;
+  }
+
+  return patterns.some((pattern) => networkText.includes(pattern.toLowerCase()));
+}
+
+export function isHighConfidenceAnonymizedTraffic(ipinfo: IpinfoEnrichment | undefined): boolean {
+  if (!ipinfo) {
+    return false;
+  }
+
+  if (ipinfo.isTor === true || ipinfo.isProxy === true) {
+    return true;
+  }
+
+  const networkText = normalizeNetworkText(ipinfo);
+  if (!networkText) {
+    return false;
+  }
+
+  // This set is intentionally strict to avoid filtering ordinary traffic.
+  if (networkText.includes("r0cket.cloud")) {
+    return true;
+  }
+
+  const torKeywords = [" tor ", "tor-", ".tor.", "torproject", "exit node", "relay"];
+  if (containsAny(networkText, torKeywords) && (networkText.includes("exit") || networkText.includes("relay"))) {
+    return true;
+  }
+
+  return false;
 }
 
 function sanitizeCidrPrefix(prefix: string): number | undefined {

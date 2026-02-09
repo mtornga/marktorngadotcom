@@ -21,6 +21,29 @@ function pickNestedString(source: Record<string, unknown>, parentKey: string, ch
   return pickString(parent as Record<string, unknown>, childKey);
 }
 
+function pickBoolean(source: Record<string, unknown>, key: string): boolean | undefined {
+  const value = source[key];
+  if (typeof value === "boolean") {
+    return value;
+  }
+  if (typeof value === "number") {
+    return value !== 0;
+  }
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (!normalized) {
+      return undefined;
+    }
+    if (normalized === "true" || normalized === "1" || normalized === "yes") {
+      return true;
+    }
+    if (normalized === "false" || normalized === "0" || normalized === "no") {
+      return false;
+    }
+  }
+  return undefined;
+}
+
 function normalizeIpinfo(data: Record<string, unknown>): IpinfoEnrichment {
   const asn = pickString(data, "asn") ?? pickString(data, "as_number");
   const asName = pickString(data, "as_name") ?? pickString(data, "asname");
@@ -28,6 +51,10 @@ function normalizeIpinfo(data: Record<string, unknown>): IpinfoEnrichment {
   const org = pickString(data, "org") ?? pickString(data, "organization");
   const timezone = pickString(data, "timezone");
   const company = pickNestedString(data, "company", "name") ?? pickString(data, "company_name");
+  const isTor = pickBoolean(data, "is_tor");
+  const isProxy = pickBoolean(data, "is_proxy");
+  const isVpn = pickBoolean(data, "is_vpn");
+  const isHosting = pickBoolean(data, "is_hosting");
 
   return {
     asn,
@@ -36,6 +63,10 @@ function normalizeIpinfo(data: Record<string, unknown>): IpinfoEnrichment {
     org,
     timezone,
     company,
+    isTor,
+    isProxy,
+    isVpn,
+    isHosting,
   };
 }
 

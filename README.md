@@ -19,6 +19,7 @@ This project includes first-party visit tracking that posts pageview events to `
 
 - Every page view is eligible.
 - Human-biased filtering (bots + prefetch skipped).
+- High-confidence anonymized traffic filtering (Tor/proxy signatures).
 - Production only (`VERCEL_ENV=production`).
 - Self-traffic exclusion via `VISIT_NOTIFY_EXCLUDE_IPS`.
 
@@ -35,6 +36,8 @@ Copy `.env.example` and set values in Vercel **Production** environment:
 - `IPINFO_TOKEN`
 - `VISIT_NOTIFY_ALLOWED_HOSTS=marktornga.com,www.marktornga.com`
 - `VISIT_NOTIFY_EXCLUDE_IPS` (comma-separated IP/CIDR, for example `73.1.2.3,192.168.0.0/16`)
+- `VISIT_NOTIFY_EXCLUDE_ASNS` (comma-separated, for example `AS214503`)
+- `VISIT_NOTIFY_EXCLUDE_NETWORK_PATTERNS` (comma-separated lowercase match terms, for example `r0cket.cloud`)
 - `VISIT_NOTIFY_HASH_SALT` (recommended)
 
 ### Local smoke test

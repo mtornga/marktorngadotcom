@@ -36,6 +36,10 @@ export interface IpinfoEnrichment {
   org?: string;
   timezone?: string;
   company?: string;
+  isTor?: boolean;
+  isProxy?: boolean;
+  isVpn?: boolean;
+  isHosting?: boolean;
 }
 
 export interface VisitEvent {
