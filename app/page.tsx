@@ -30,8 +30,8 @@ export default function Home() {
             <Button href="/portfolio" variant="secondary">
               View Portfolio
             </Button>
-            <Button href="/about" variant="accent">
-              About Me
+            <Button href="/resume" variant="accent">
+              Resume
             </Button>
           </div>
         </Card>

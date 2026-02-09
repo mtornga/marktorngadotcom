@@ -338,7 +338,7 @@ export default function ResumeDial({
 
       <div className="text-center">
         {!compact && <p className="font-heading font-bold text-xl text-neo-primary">{currentLevel.label}</p>}
-        {!compact && <p className="text-sm text-neo-text/70">Use drag, touch, or click to switch levels.</p>}
+        {!compact && <p className="text-sm text-neo-text/70">Use drag, touch, click, or arrow keys to switch levels.</p>}
       </div>
     </div>
   );
