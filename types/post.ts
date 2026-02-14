@@ -2,6 +2,8 @@ export interface PostFrontMatter {
   title: string;
   description?: string;
   date: string;
+  author?: string;
+  layout?: 'default' | 'readable';
   heroImage?: string;
   tags?: string[];
 }

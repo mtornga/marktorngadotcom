@@ -5,7 +5,9 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import Container from '@/components/layout/Container';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
+import remarkGfm from 'remark-gfm';
 import { getPostBySlug, getPostSlugs } from '@/lib/content';
+import { cn } from '@/lib/utils';
 
 interface PostPageProps {
   params: Promise<{
@@ -35,6 +37,9 @@ export async function generateMetadata({
   return {
     title: `${post.frontmatter.title} | Mark Tornga`,
     description: post.frontmatter.description,
+    authors: post.frontmatter.author
+      ? [{ name: post.frontmatter.author }]
+      : [{ name: 'Mark Tornga' }],
     openGraph: {
       title: post.frontmatter.title,
       description: post.frontmatter.description,
@@ -54,51 +59,85 @@ export default async function PostPage({ params }: PostPageProps) {
   }
 
   const { frontmatter, content } = post;
+  const isReadable = frontmatter.layout === 'readable';
+  const readingTime = Math.ceil(content.split(/\s+/).length / 230);
 
   return (
-    <main className="py-20">
-      <Container size="md">
+    <main id="top" className={cn('py-20', isReadable && 'bg-white py-12 md:py-16')}>
+      <Container size={isReadable ? 'sm' : 'md'}>
         {/* Post Header */}
         <header className="mb-12">
           <Link
             href="/blog"
-            className="text-neo-primary hover:text-neo-accent transition-colors font-bold mb-6 inline-block"
+            className={cn(
+              'transition-colors font-bold mb-6 inline-block',
+              isReadable
+                ? 'text-zinc-700 hover:text-zinc-900'
+                : 'text-neo-primary hover:text-neo-accent'
+            )}
           >
             &larr; Back to Writing
           </Link>
 
           {frontmatter.heroImage && (
-            <div className="mb-8 border-4 border-neo-text shadow-neo overflow-hidden">
+            <div
+              className={cn(
+                'mb-8 overflow-hidden',
+                isReadable
+                  ? 'rounded-lg border border-zinc-200 shadow-sm'
+                  : 'border-4 border-neo-text shadow-neo'
+              )}
+            >
               <img
                 src={frontmatter.heroImage}
                 alt={frontmatter.title}
-                className="w-full h-64 md:h-96 object-cover"
+                className="w-full h-72 md:h-[28rem] object-cover"
               />
             </div>
           )}
 
-          <time className="text-sm text-neo-text/60 font-mono">
+          <time
+            className={cn(
+              'text-sm',
+              isReadable ? 'text-zinc-500' : 'text-neo-text/60 font-mono'
+            )}
+          >
             {new Date(frontmatter.date).toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'long',
               day: 'numeric',
             })}
+            {isReadable && (
+              <span className="text-zinc-400"> &middot; {readingTime} min read</span>
+            )}
           </time>
 
-          <h1 className="font-heading font-bold text-4xl md:text-5xl mt-2 mb-4 text-neo-primary transform -rotate-1">
-            {frontmatter.title}
-          </h1>
-
-          {frontmatter.description && (
-            <p className="text-xl text-neo-text/80 mb-6">
-              {frontmatter.description}
+          {frontmatter.author && (
+            <p
+              className={cn(
+                'mt-2 mb-2 text-base',
+                isReadable ? 'text-zinc-700' : 'text-neo-text/80'
+              )}
+            >
+              By {frontmatter.author}
             </p>
           )}
 
+          <h1
+            className={cn(
+              'font-heading font-bold text-4xl md:text-5xl mt-2 mb-4',
+              isReadable
+                ? 'text-zinc-900 tracking-tight'
+                : 'text-neo-primary transform -rotate-1'
+            )}
+          >
+            {frontmatter.title}
+          </h1>
+
           {frontmatter.tags && frontmatter.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 mb-6">
               {frontmatter.tags.map((tag) => (
-                <Badge key={tag} variant="accent">
+                <Badge key={tag} variant={isReadable ? 'default' : 'accent'}>
                   {tag}
                 </Badge>
               ))}
@@ -107,15 +146,49 @@ export default async function PostPage({ params }: PostPageProps) {
         </header>
 
         {/* MDX Content */}
-        <article className="prose prose-lg max-w-none">
-          <MDXRemote source={content} />
+        <article
+          className={cn(
+            'prose prose-lg max-w-none',
+            isReadable &&
+              'prose-zinc readable-article'
+          )}
+        >
+          <MDXRemote
+            source={content}
+            options={{
+              mdxOptions: {
+                remarkPlugins: [remarkGfm],
+              },
+            }}
+          />
         </article>
 
         {/* Footer */}
-        <footer className="mt-16 pt-8 border-t-4 border-neo-text">
-          <Button href="/blog" variant="primary">
-            &larr; More Writing
-          </Button>
+        <footer
+          className={cn(
+            isReadable ? 'mt-20 pt-10 border-t border-zinc-200' : 'mt-16 pt-8 border-t-4 border-neo-text'
+          )}
+        >
+          {isReadable ? (
+            <div className="flex items-center justify-between">
+              <Link
+                href="/blog"
+                className="inline-block text-zinc-700 hover:text-zinc-900 font-semibold"
+              >
+                &larr; More Writing
+              </Link>
+              <Link
+                href="#top"
+                className="text-sm text-zinc-400 hover:text-zinc-600 transition-colors"
+              >
+                Back to top &uarr;
+              </Link>
+            </div>
+          ) : (
+            <Button href="/blog" variant="primary">
+              &larr; More Writing
+            </Button>
+          )}
         </footer>
       </Container>
     </main>
