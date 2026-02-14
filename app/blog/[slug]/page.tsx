@@ -5,6 +5,10 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import Container from '@/components/layout/Container';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
+import Figure from '@/components/ui/Figure';
+import HoverPhoto from '@/components/ui/HoverPhoto';
+import ScrollProgress from '@/components/ui/ScrollProgress';
+import ShareButtons from '@/components/ui/ShareButtons';
 import remarkGfm from 'remark-gfm';
 import { getPostBySlug, getPostSlugs } from '@/lib/content';
 import { cn } from '@/lib/utils';
@@ -63,7 +67,8 @@ export default async function PostPage({ params }: PostPageProps) {
   const readingTime = Math.ceil(content.split(/\s+/).length / 230);
 
   return (
-    <main id="top" className={cn('py-20', isReadable && 'bg-white py-12 md:py-16')}>
+    <main id="top" className={cn('py-20', isReadable ? 'bg-white py-12 md:py-16' : 'pb-32')}>
+      {!isReadable && <ScrollProgress />}
       <Container size={isReadable ? 'sm' : 'md'}>
         {/* Post Header */}
         <header className="mb-12">
@@ -150,11 +155,15 @@ export default async function PostPage({ params }: PostPageProps) {
           className={cn(
             'prose prose-lg max-w-none',
             isReadable &&
-              'prose-zinc readable-article'
+            'prose-zinc readable-article'
           )}
         >
           <MDXRemote
             source={content}
+            components={{
+              Figure,
+              HoverPhoto,
+            }}
             options={{
               mdxOptions: {
                 remarkPlugins: [remarkGfm],
@@ -162,6 +171,11 @@ export default async function PostPage({ params }: PostPageProps) {
             }}
           />
         </article>
+
+        <ShareButtons
+          title={frontmatter.title}
+          isReadable={isReadable}
+        />
 
         {/* Footer */}
         <footer
