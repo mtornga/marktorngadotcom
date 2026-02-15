@@ -150,6 +150,14 @@ export default async function PostPage({ params }: PostPageProps) {
           )}
         </header>
 
+        {!isReadable && (
+          <ShareButtons
+            title={frontmatter.title}
+            isReadable={isReadable}
+            className="mt-0 mb-10"
+          />
+        )}
+
         {/* MDX Content */}
         <article
           className={cn(

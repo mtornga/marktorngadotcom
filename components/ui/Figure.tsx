@@ -30,7 +30,7 @@ export default function Figure({
         small: 'figure-small mx-auto max-w-2xl my-8',
     }[layout];
 
-    const captionClass = "text-sm text-center mt-2 italic text-gray-600 dark:text-gray-400";
+    const captionClass = "text-base text-center mt-3 italic leading-6 font-medium text-zinc-800";
 
     if (layout === 'pair' && secondSrc) {
         return (
