@@ -139,15 +139,7 @@ export default async function PostPage({ params }: PostPageProps) {
             {frontmatter.title}
           </h1>
 
-          {frontmatter.tags && frontmatter.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-6">
-              {frontmatter.tags.map((tag) => (
-                <Badge key={tag} variant={isReadable ? 'default' : 'accent'}>
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          )}
+
         </header>
 
         {!isReadable && (
@@ -179,6 +171,16 @@ export default async function PostPage({ params }: PostPageProps) {
             }}
           />
         </article>
+
+        {frontmatter.tags && frontmatter.tags.length > 0 && (
+          <div className="mt-8 mb-8 flex flex-wrap gap-2">
+            {frontmatter.tags.map((tag) => (
+              <Badge key={tag} variant={isReadable ? 'default' : 'accent'}>
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        )}
 
         <ShareButtons
           title={frontmatter.title}
