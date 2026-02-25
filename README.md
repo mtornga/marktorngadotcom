@@ -71,6 +71,57 @@ Notes:
 - Vercel Hobby plan does not support sub-daily cron schedules.
 - If you need 5-minute cadence on Hobby, use an external scheduler (for example GitHub Actions or cron-job.org) to call `GET https://marktornga.com/api/visit/flush` with the bearer token.
 
+### Current production scheduler topology
+
+The current production setup uses AWS as primary scheduler and GitHub Actions as fallback:
+
+- Primary scheduler: EventBridge rule `marktornga-visit-flush-5min` (`rate(5 minutes)`).
+- Primary executor: Lambda `marktornga-visit-flush`.
+- Fallback scheduler: GitHub Actions workflow `.github/workflows/visit-flush-fallback.yml` (`*/15` + manual dispatch).
+- Flush URL: `https://marktornga.com/api/visit/flush`.
+- Auth: `Authorization: Bearer <VISIT_NOTIFY_CRON_SECRET>`.
+
+### AWS operational checks (for future agents)
+
+Use AWS CLI (`us-east-1`) to verify scheduler and alarms:
+
+```bash
+aws events describe-rule \
+  --region us-east-1 \
+  --name marktornga-visit-flush-5min
+
+aws events list-targets-by-rule \
+  --region us-east-1 \
+  --rule marktornga-visit-flush-5min
+
+aws lambda get-function \
+  --region us-east-1 \
+  --function-name marktornga-visit-flush
+```
+
+CloudWatch alarms currently configured:
+
+- `marktornga-visit-flush-errors` (Lambda errors in 5-minute window).
+- `marktornga-visit-flush-missing-invocations` (no invocations detected in 15 minutes).
+
+Check alarm state:
+
+```bash
+aws cloudwatch describe-alarms \
+  --region us-east-1 \
+  --alarm-name-prefix marktornga-visit-flush \
+  --query 'MetricAlarms[].{name:AlarmName,state:StateValue,reason:StateReason}' \
+  --output table
+```
+
+Inspect recent Lambda logs when alarmed:
+
+```bash
+aws logs tail /aws/lambda/marktornga-visit-flush \
+  --region us-east-1 \
+  --since 1h
+```
+
 ### Local smoke test
 
 Local requests will return `204` and skip push notifications unless `VERCEL_ENV=production`.
