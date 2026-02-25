@@ -13,8 +13,16 @@ import {
 } from "@/lib/visit/filters";
 import { lookupIpinfo } from "@/lib/visit/ipinfo";
 import { hashIp, maskIp, sanitizeUtmParams } from "@/lib/visit/privacy";
-import { sendPushoverVisitNotification } from "@/lib/visit/pushover";
-import type { GeoInfo, ViewportInfo, VisitPayload } from "@/lib/visit/types";
+import {
+  sendPushoverSessionStartNotification,
+  sendPushoverVisitNotification,
+} from "@/lib/visit/pushover";
+import {
+  deriveCookielessFingerprint,
+  getSessionConfigFromEnv,
+  recordSessionEvent,
+} from "@/lib/visit/session";
+import type { GeoInfo, ViewportInfo, VisitEventType, VisitPayload } from "@/lib/visit/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -25,6 +33,9 @@ const MAX_REFERRER_LENGTH = 1024;
 const MAX_TITLE_LENGTH = 200;
 const MAX_TZ_LENGTH = 64;
 const MAX_LANG_LENGTH = 32;
+const MAX_PAGE_ID_LENGTH = 120;
+const SESSIONS_ENABLED = (process.env.VISIT_NOTIFY_SESSIONS_ENABLED ?? "false").toLowerCase() === "true";
+const SESSION_CONFIG = getSessionConfigFromEnv();
 
 const configuredHosts = parseCommaList(process.env.VISIT_NOTIFY_ALLOWED_HOSTS);
 const allowedHosts = new Set(
@@ -35,6 +46,7 @@ const allowedHosts = new Set(
 const excludedIpPatterns = parseCommaList(process.env.VISIT_NOTIFY_EXCLUDE_IPS);
 const excludedAsns = parseCommaList(process.env.VISIT_NOTIFY_EXCLUDE_ASNS);
 const excludedNetworkPatterns = parseCommaList(process.env.VISIT_NOTIFY_EXCLUDE_NETWORK_PATTERNS);
+const VISIT_EVENT_TYPES = new Set<VisitEventType>(["page_view", "heartbeat", "page_hide"]);
 
 function safeString(value: unknown, maxLength: number): string | undefined {
   if (typeof value !== "string") {
@@ -109,6 +121,76 @@ function parseOptionalUrl(raw: unknown): string | undefined {
   }
 }
 
+function parseEventType(raw: unknown): VisitEventType {
+  if (typeof raw !== "string") {
+    return "page_view";
+  }
+
+  const normalized = raw.trim().toLowerCase() as VisitEventType;
+  if (!VISIT_EVENT_TYPES.has(normalized)) {
+    return "page_view";
+  }
+
+  return normalized;
+}
+
+function parsePageId(raw: unknown, path: string): string {
+  if (typeof raw === "string") {
+    const trimmed = raw.trim();
+    if (trimmed) {
+      return trimmed.slice(0, MAX_PAGE_ID_LENGTH);
+    }
+  }
+
+  return `${path}-${Date.now()}`;
+}
+
+function parseClientTs(raw: unknown): number {
+  const parsed = Number(raw);
+  if (!Number.isFinite(parsed)) {
+    return Date.now();
+  }
+
+  const now = Date.now();
+  const minAllowed = now - 7 * 24 * 60 * 60 * 1000;
+  const maxAllowed = now + 5 * 60 * 1000;
+  if (parsed < minAllowed || parsed > maxAllowed) {
+    return now;
+  }
+
+  return Math.floor(parsed);
+}
+
+function parseActiveMsDelta(raw: unknown): number | undefined {
+  if (raw === undefined || raw === null) {
+    return undefined;
+  }
+
+  const parsed = Number(raw);
+  if (!Number.isFinite(parsed)) {
+    return undefined;
+  }
+
+  if (parsed <= 0) {
+    return 0;
+  }
+
+  return Math.floor(Math.min(parsed, 5 * 60 * 1000));
+}
+
+function parseScrollMaxPct(raw: unknown): number | undefined {
+  if (raw === undefined || raw === null) {
+    return undefined;
+  }
+
+  const parsed = Number(raw);
+  if (!Number.isFinite(parsed)) {
+    return undefined;
+  }
+
+  return Math.max(0, Math.min(100, Math.round(parsed)));
+}
+
 async function parsePayload(request: Request): Promise<VisitPayload | undefined> {
   let body: unknown;
   try {
@@ -128,6 +210,11 @@ async function parsePayload(request: Request): Promise<VisitPayload | undefined>
   }
 
   return {
+    eventType: parseEventType(value.eventType),
+    pageId: parsePageId(value.pageId, path),
+    clientTs: parseClientTs(value.clientTs),
+    activeMsDelta: parseActiveMsDelta(value.activeMsDelta),
+    scrollMaxPct: parseScrollMaxPct(value.scrollMaxPct),
     path,
     utm: sanitizeUtmParams(value.utm),
     referrer: parseOptionalUrl(value.referrer),
@@ -301,33 +388,106 @@ export async function POST(request: Request): Promise<Response> {
   const maskedIp = maskIp(clientIp);
   const hashedIp = hashIp(clientIp, process.env.VISIT_NOTIFY_HASH_SALT);
   const safeUtm = payload.utm ?? {};
+  const referrerHost = parseReferrerHost(payload.referrer);
+  const userAgent = parseUserAgent(userAgentRaw);
   const event = {
     timestampIso: new Date().toISOString(),
     host,
     fullUrl: buildFullUrl(host, payload.path, safeUtm),
     path: payload.path,
     utm: safeUtm,
-    referrerHost: parseReferrerHost(payload.referrer),
+    referrerHost,
     pageTitle: payload.title,
     timezone: payload.tz,
     language: payload.lang,
     viewport: payload.viewport,
     maskedIp,
     hashedIp,
-    userAgent: parseUserAgent(userAgentRaw),
+    userAgent,
     geo,
     ipinfo,
   };
 
-  const pushed = await sendPushoverVisitNotification(event);
-  console.info("[visit-notify] visit processed", {
-    path: event.path,
-    host: event.host,
-    maskedIp: event.maskedIp,
-    hashedIp: event.hashedIp,
-    deviceClass: event.userAgent.deviceClass,
-    country: event.geo.country,
-    pushed,
+  if (!SESSIONS_ENABLED) {
+    if (payload.eventType !== "page_view") {
+      return new Response(null, { status: 204 });
+    }
+
+    const pushed = await sendPushoverVisitNotification(event);
+    console.info("[visit-notify] visit processed", {
+      mode: "page_view_only",
+      path: event.path,
+      host: event.host,
+      maskedIp: event.maskedIp,
+      hashedIp: event.hashedIp,
+      deviceClass: event.userAgent.deviceClass,
+      country: event.geo.country,
+      pushed,
+    });
+
+    return new Response(null, { status: 204 });
+  }
+
+  const fingerprint = deriveCookielessFingerprint({
+    hashedIp,
+    maskedIp,
+    userAgentRaw,
+    language: payload.lang,
+    timezone: payload.tz,
+  });
+
+  const pageId = payload.pageId ?? `${payload.path}-${payload.clientTs ?? Date.now()}`;
+  const eventType = payload.eventType ?? "page_view";
+  const recorded = await recordSessionEvent(
+    {
+      host,
+      path: payload.path,
+      fullUrl: event.fullUrl,
+      referrerHost,
+      title: payload.title,
+      language: payload.lang,
+      timezone: payload.tz,
+      maskedIp,
+      hashedIp,
+      userAgent,
+      geo,
+      ipinfo,
+      eventType,
+      pageId,
+      clientTs: payload.clientTs ?? Date.now(),
+      activeMsDelta: payload.activeMsDelta,
+      scrollMaxPct: payload.scrollMaxPct,
+    },
+    fingerprint,
+    SESSION_CONFIG,
+  );
+
+  if (!recorded) {
+    console.warn("[visit-notify] sessions enabled but KV is unavailable; skipping event", {
+      path: payload.path,
+      host,
+      eventType,
+    });
+    return new Response(null, { status: 204 });
+  }
+
+  let pushedStart = false;
+  if (recorded.startedNewSession) {
+    pushedStart = await sendPushoverSessionStartNotification(recorded.session);
+  }
+
+  console.info("[visit-notify] session event processed", {
+    mode: "session_tracking",
+    sessionId: recorded.session.sessionId,
+    startedNewSession: recorded.startedNewSession,
+    eventType,
+    path: payload.path,
+    host,
+    maskedIp,
+    hashedIp,
+    deviceClass: userAgent.deviceClass,
+    country: geo.country,
+    pushedStart,
   });
 
   return new Response(null, { status: 204 });
