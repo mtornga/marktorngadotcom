@@ -57,15 +57,19 @@ Copy `.env.example` and set values in Vercel **Production** environment:
 - `KV_REST_API_URL`
 - `KV_REST_API_TOKEN`
 
-### Vercel cron
+### Session flush scheduling
 
-`/api/visit/flush` should run every 5 minutes to finalize idle sessions and send end summaries.  
-This repo includes `vercel.json` cron config for that path.
+`/api/visit/flush` should run every 5 minutes to finalize idle sessions and send end summaries.
 
 The endpoint requires:
 
 - `Authorization: Bearer <VISIT_NOTIFY_CRON_SECRET>`
 - `VISIT_NOTIFY_SESSIONS_ENABLED=true`
+
+Notes:
+
+- Vercel Hobby plan does not support sub-daily cron schedules.
+- If you need 5-minute cadence on Hobby, use an external scheduler (for example GitHub Actions or cron-job.org) to call `GET https://marktornga.com/api/visit/flush` with the bearer token.
 
 ### Local smoke test
 
