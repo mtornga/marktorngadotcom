@@ -1,0 +1,40 @@
+name: Visit Flush Fallback
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  flush:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Call visit flush endpoint
+        env:
+          VISIT_FLUSH_URL: ${{ secrets.VISIT_FLUSH_URL }}
+          VISIT_NOTIFY_CRON_SECRET: ${{ secrets.VISIT_NOTIFY_CRON_SECRET }}
+        run: |
+          if [ -z "$VISIT_FLUSH_URL" ] || [ -z "$VISIT_NOTIFY_CRON_SECRET" ]; then
+            echo "Missing required secrets: VISIT_FLUSH_URL and/or VISIT_NOTIFY_CRON_SECRET"
+            exit 1
+          fi
+
+          http_code=$(curl --silent --show-error --output /tmp/flush_response.json \
+            --write-out "%{http_code}" \
+            --max-time 20 \
+            --retry 2 \
+            --retry-delay 2 \
+            -H "Authorization: Bearer $VISIT_NOTIFY_CRON_SECRET" \
+            -H "User-Agent: github-actions-visit-flush-fallback/1.0" \
+            "$VISIT_FLUSH_URL")
+
+          echo "HTTP status: $http_code"
+          cat /tmp/flush_response.json
+
+          if [ "$http_code" -lt 200 ] || [ "$http_code" -ge 300 ]; then
+            exit 1
+          fi
