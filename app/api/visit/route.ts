@@ -462,17 +462,20 @@ export async function POST(request: Request): Promise<Response> {
     SESSION_CONFIG,
   );
 
-  if (!recorded) {
-    console.warn("[visit-notify] sessions enabled but KV is unavailable; skipping event", {
-      path: payload.path,
-      host,
-      eventType,
-    });
+  if (recorded.ignored) {
+    if (recorded.reason === "kv_unavailable") {
+      console.warn("[visit-notify] sessions enabled but KV is unavailable; skipping event", {
+        path: payload.path,
+        host,
+        eventType,
+      });
+    }
+
     return new Response(null, { status: 204 });
   }
 
   let pushedStart = false;
-  if (recorded.startedNewSession) {
+  if (recorded.startedNewSession && eventType === "page_view") {
     pushedStart = await sendPushoverSessionStartNotification(recorded.session);
   }
 

@@ -280,31 +280,65 @@ async function findActiveSession(
   return session;
 }
 
-export interface RecordSessionEventResult {
-  session: ActiveSessionRecord;
-  startedNewSession: boolean;
-}
+export type RecordSessionEventResult =
+  | {
+      ignored: true;
+      reason: "kv_unavailable" | "orphan_non_page_view";
+      startedNewSession: false;
+    }
+  | {
+      ignored: false;
+      session: ActiveSessionRecord;
+      startedNewSession: boolean;
+    };
 
 export async function recordSessionEvent(
   input: SessionEventInput,
   fingerprint: string,
   config: SessionConfig,
-): Promise<RecordSessionEventResult | undefined> {
+): Promise<RecordSessionEventResult> {
   if (!isKvConfigured()) {
-    return undefined;
+    return {
+      ignored: true,
+      reason: "kv_unavailable",
+      startedNewSession: false,
+    };
   }
 
   const nowMs = Date.now();
   const activeSession = await findActiveSession(fingerprint, config, nowMs);
+  if (!activeSession && input.eventType !== "page_view") {
+    return {
+      ignored: true,
+      reason: "orphan_non_page_view",
+      startedNewSession: false,
+    };
+  }
+
   const startedNewSession = !activeSession;
   const session = applySessionEvent(activeSession ?? createSessionRecord(input, fingerprint, nowMs), input, config, nowMs);
 
   await saveSession(session, config, nowMs);
 
   return {
+    ignored: false,
     session,
     startedNewSession,
   };
+}
+
+async function closeSession(session: ActiveSessionRecord, config: SessionConfig, nowMs: number): Promise<void> {
+  session.endedAtIso = toIso(nowMs);
+
+  await setKvJson(sessionKey(session.sessionId), session, config.ttlSeconds);
+  await setKvString(closedKey(session.sessionId), "1", config.ttlSeconds);
+  await zremKv(SESSION_LAST_SEEN_ZSET_KEY, session.sessionId);
+
+  const activeKey = activeFingerprintKey(session.fingerprint);
+  const mappedSessionId = await getKvString(activeKey);
+  if (mappedSessionId === session.sessionId) {
+    await deleteKvKey(activeKey);
+  }
 }
 
 async function finalizeSession(
@@ -328,18 +362,15 @@ async function finalizeSession(
     return undefined;
   }
 
-  session.endedAtIso = toIso(nowMs);
+  // Ignore orphan sessions that never captured a page_view.
+  if (session.pageViewCount <= 0) {
+    await closeSession(session, config, nowMs);
+    return undefined;
+  }
+
   const summary = buildSessionSummary(session, nowMs);
 
-  await setKvJson(sessionKey(session.sessionId), session, config.ttlSeconds);
-  await setKvString(closedKey(session.sessionId), "1", config.ttlSeconds);
-  await zremKv(SESSION_LAST_SEEN_ZSET_KEY, session.sessionId);
-
-  const activeKey = activeFingerprintKey(session.fingerprint);
-  const mappedSessionId = await getKvString(activeKey);
-  if (mappedSessionId === session.sessionId) {
-    await deleteKvKey(activeKey);
-  }
+  await closeSession(session, config, nowMs);
 
   return summary;
 }
