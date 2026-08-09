@@ -37,3 +37,6 @@ Thumbs.db
 
 # Vercel
 .vercel
+
+# Claude Code local machine state (permissions, etc.)
+.claude/settings.local.json
