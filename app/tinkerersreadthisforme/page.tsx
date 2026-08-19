@@ -212,51 +212,32 @@ export default function TinkerersReadThisForMePage() {
           </div>
         </Slide>
 
-        {/* ---------- 2. The cursive argument ---------- */}
+        {/* ---------- 2. Who It Helps ---------- */}
         <Slide>
-          <Panel className="bg-neo-secondary transform rotate-1">
-            <SlideTitle className="!text-neo-text">
-              How a Skill Dies
-            </SlideTitle>
-            <div className="grid md:grid-cols-3 gap-6 mb-10">
-              {[
-                { n: '1', t: 'Everyone can write cursive.', s: 'It is simply how writing works.' },
-                { n: '2', t: 'You should learn cursive because I said so.', s: 'The reason is now the authority, not the use.' },
-                { n: '3', t: 'No one can explain why we’re still teaching cursive.', s: 'It survives as ritual, then it stops.' },
-              ].map((stage) => (
-                <div
-                  key={stage.n}
-                  className="border-4 border-neo-text bg-neo-surface p-6 shadow-neo-sm"
-                >
-                  <div className="font-heading font-bold text-5xl text-neo-primary mb-3">
-                    {stage.n}
-                  </div>
-                  <p className="font-heading font-bold text-xl md:text-2xl mb-3">
-                    {stage.t}
-                  </p>
-                  <p className="text-neo-text/70 text-base md:text-lg">{stage.s}</p>
-                </div>
-              ))}
-            </div>
-            <div className="border-8 border-neo-text bg-neo-text text-neo-bg p-6 md:p-8 shadow-neo">
-              <p className="font-heading font-bold text-2xl md:text-4xl mb-4">
-                Now run the same three stages on <em>reading</em>.
+          <Panel className="bg-neo-bg transform rotate-1">
+            <SlideTitle>Who It Helps</SlideTitle>
+            <p className="text-xl md:text-3xl mb-6">
+              <strong>54 million adults in the U.S.</strong> read below a
+              6th-grade level. Many navigate daily life by asking others for
+              help, memorizing routines, or avoiding situations entirely.
+            </p>
+            <p className="text-xl md:text-3xl mb-6">
+              <strong>Read This For Me</strong> lets people read independently and
+              privately — no accounts, no history, no one watching. Just point at
+              text and listen.
+            </p>
+            <div className="border-l-8 border-neo-accent pl-6 py-2">
+              <p className="text-neo-text/90 italic text-lg md:text-2xl">
+                Perfect for reading menus at restaurants, understanding medical
+                paperwork, decoding official letters, and navigating signs and
+                notices.
               </p>
-              <ol className="space-y-3 text-xl md:text-3xl font-heading">
-                <li>
-                  <span className="text-neo-secondary font-bold">1.</span> Everyone
-                  can read. <span className="opacity-50 text-lg md:text-xl">— you are here</span>
-                </li>
-                <li>
-                  <span className="text-neo-secondary font-bold">2.</span> You should
-                  learn to read because I said so.
-                </li>
-                <li>
-                  <span className="text-neo-secondary font-bold">3.</span> No one can
-                  explain why we&apos;re still teaching reading.
-                </li>
-              </ol>
             </div>
+            <p className="text-lg md:text-xl text-neo-text/70 mt-8">
+              That is the user today, and it is reason enough to build this. The
+              rest of this section is about why I do not think the problem stays
+              this size.
+            </p>
           </Panel>
         </Slide>
 
@@ -304,30 +285,51 @@ export default function TinkerersReadThisForMePage() {
           </Panel>
         </Slide>
 
-        {/* ---------- 4. Who It Helps ---------- */}
+        {/* ---------- 4. The cursive argument ---------- */}
         <Slide>
-          <Panel className="bg-neo-bg transform rotate-1">
-            <SlideTitle>Who It Helps</SlideTitle>
-            <p className="text-xl md:text-3xl mb-6">
-              <strong>54 million adults in the U.S.</strong> read below a
-              6th-grade level. Many navigate daily life by asking others for
-              help, memorizing routines, or avoiding situations entirely.
-            </p>
-            <p className="text-xl md:text-3xl mb-6">
-              <strong>Read This For Me</strong> lets people read independently and
-              privately — no accounts, no history, no one watching. Just point at
-              text and listen.
-            </p>
-            <div className="border-l-8 border-neo-accent pl-6 py-2">
-              <p className="text-neo-text/90 italic text-lg md:text-2xl">
-                Perfect for reading menus at restaurants, understanding medical
-                paperwork, decoding official letters, and navigating signs and
-                notices.
-              </p>
+          <Panel className="bg-neo-secondary transform rotate-1">
+            <SlideTitle className="!text-neo-text">
+              How a Skill Dies
+            </SlideTitle>
+            <div className="grid md:grid-cols-3 gap-6 mb-10">
+              {[
+                { n: '1', t: 'Everyone can write cursive.', s: 'It is simply how writing works.' },
+                { n: '2', t: 'You should learn cursive because I said so.', s: 'The reason is now the authority, not the use.' },
+                { n: '3', t: 'No one can explain why we’re still teaching cursive.', s: 'It survives as ritual, then it stops.' },
+              ].map((stage) => (
+                <div
+                  key={stage.n}
+                  className="border-4 border-neo-text bg-neo-surface p-6 shadow-neo-sm"
+                >
+                  <div className="font-heading font-bold text-5xl text-neo-primary mb-3">
+                    {stage.n}
+                  </div>
+                  <p className="font-heading font-bold text-xl md:text-2xl mb-3">
+                    {stage.t}
+                  </p>
+                  <p className="text-neo-text/70 text-base md:text-lg">{stage.s}</p>
+                </div>
+              ))}
             </div>
-            <p className="text-lg md:text-xl text-neo-text/70 mt-8">
-              The futurist argument is the hook. This is the actual user, today.
-            </p>
+            <div className="border-8 border-neo-text bg-neo-text text-neo-bg p-6 md:p-8 shadow-neo">
+              <p className="font-heading font-bold text-2xl md:text-4xl mb-4">
+                Now run the same three stages on <em>reading</em>.
+              </p>
+              <ol className="space-y-3 text-xl md:text-3xl font-heading">
+                <li>
+                  <span className="text-neo-secondary font-bold">1.</span> Everyone
+                  can read. <span className="opacity-50 text-lg md:text-xl">— you are here</span>
+                </li>
+                <li>
+                  <span className="text-neo-secondary font-bold">2.</span> You should
+                  learn to read because I said so.
+                </li>
+                <li>
+                  <span className="text-neo-secondary font-bold">3.</span> No one can
+                  explain why we&apos;re still teaching reading.
+                </li>
+              </ol>
+            </div>
           </Panel>
         </Slide>
 
