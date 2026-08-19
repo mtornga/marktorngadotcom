@@ -386,54 +386,7 @@ export default function TinkerersReadThisForMePage() {
           </Panel>
         </Slide>
 
-        {/* ---------- 6. Real world -> data -> information ---------- */}
-        <Slide>
-          <Panel className="bg-neo-accent transform rotate-1">
-            <h2 className="font-heading font-bold text-3xl md:text-5xl mb-8">
-              What I Actually Do for a Living
-            </h2>
-            <div className="grid md:grid-cols-3 gap-6 mb-10">
-              {[
-                {
-                  n: 'Real world',
-                  d: 'A clipboard, a sign, a label. Something physical with words on it.',
-                },
-                {
-                  n: 'Data',
-                  d: 'A sensor turns it into rows. Here, a camera plus Cloud Vision turns it into a string.',
-                },
-                {
-                  n: 'Information',
-                  d: 'Something a person can act on. This is the step that used to be expensive.',
-                },
-              ].map((step, i) => (
-                <div
-                  key={step.n}
-                  className="border-4 border-neo-text bg-neo-surface p-6 shadow-neo-sm"
-                >
-                  <div className="font-heading font-bold text-neo-primary text-sm md:text-base uppercase tracking-widest mb-2">
-                    Step {i + 1}
-                  </div>
-                  <h3 className="font-heading font-bold text-2xl md:text-3xl mb-3">
-                    {step.n}
-                  </h3>
-                  <p className="text-neo-text/80 text-lg md:text-xl">{step.d}</p>
-                </div>
-              ))}
-            </div>
-            <div className="border-8 border-neo-text bg-neo-text text-neo-bg p-6 md:p-8 shadow-neo">
-              <p className="text-xl md:text-3xl font-heading font-bold mb-4">
-                Step 3 now costs about 470 milliseconds and a fraction of a cent.
-              </p>
-              <p className="text-lg md:text-2xl opacity-90">
-                So you stop picking <em>one</em> rendering on the user&apos;s behalf.
-                You hand them four and let them choose.
-              </p>
-            </div>
-          </Panel>
-        </Slide>
-
-        {/* ---------- 7. Architecture ---------- */}
+        {/* ---------- 6. Architecture ---------- */}
         <Slide>
           <SlideTitle>How It Works</SlideTitle>
           <ArchitectureDiagram />
@@ -448,7 +401,7 @@ export default function TinkerersReadThisForMePage() {
           </p>
         </Slide>
 
-        {/* ---------- 8. One capture, four outputs ---------- */}
+        {/* ---------- 7. One capture, four outputs ---------- */}
         <Slide>
           <Panel className="bg-neo-surface transform -rotate-1">
             <SlideTitle>
@@ -485,15 +438,25 @@ export default function TinkerersReadThisForMePage() {
                 </ul>
               </div>
             </div>
-            <p className="text-lg md:text-2xl text-neo-text/80 mt-8">
-              When someone needs the exact wording of a legal notice, the
-              trustworthy answer is the deterministic one. Knowing which half of
-              the product should <em>not</em> use the LLM is most of the design.
+            <div className="border-l-8 border-neo-primary pl-6 py-2 mt-8">
+              <p className="text-xl md:text-3xl font-heading font-bold">
+                An explanation costs about 470 milliseconds and a fraction of a
+                cent.
+              </p>
+              <p className="text-lg md:text-2xl text-neo-text/80 mt-3">
+                So you stop picking one rendering on the user&apos;s behalf. You
+                hand them four and let them choose.
+              </p>
+            </div>
+            <p className="text-lg md:text-2xl text-neo-text/80 mt-6">
+              And knowing which half of the product should <em>not</em> use the
+              LLM is most of the design. When someone needs the exact wording of
+              a legal notice, the trustworthy answer is the deterministic one.
             </p>
           </Panel>
         </Slide>
 
-        {/* ---------- 9. The pipeline is seven lines ---------- */}
+        {/* ---------- 8. The pipeline is seven lines ---------- */}
         <Slide>
           <Panel className="bg-neo-bg transform rotate-1">
             <SlideTitle>The Whole Pipeline Is Seven Lines</SlideTitle>
@@ -527,7 +490,7 @@ export default function TinkerersReadThisForMePage() {
           </Panel>
         </Slide>
 
-        {/* ---------- 10. The prompt ---------- */}
+        {/* ---------- 9. The prompt ---------- */}
         <Slide>
           <Panel className="bg-neo-surface transform -rotate-1">
             <SlideTitle>There Is Exactly One Prompt</SlideTitle>
@@ -553,7 +516,7 @@ export default function TinkerersReadThisForMePage() {
           </Panel>
         </Slide>
 
-        {/* ---------- 11. The one-line diff ---------- */}
+        {/* ---------- 10. The one-line diff ---------- */}
         <Slide>
           <Panel className="bg-neo-secondary transform rotate-1">
             <SlideTitle className="!text-neo-text">
@@ -597,7 +560,7 @@ export default function TinkerersReadThisForMePage() {
           </Panel>
         </Slide>
 
-        {/* ---------- 12. How the prompt got there ---------- */}
+        {/* ---------- 11. How the prompt got there ---------- */}
         <Slide>
           <Panel className="bg-neo-bg transform -rotate-1">
             <SlideTitle>How That Prompt Got There</SlideTitle>
@@ -649,7 +612,7 @@ export default function TinkerersReadThisForMePage() {
           </Panel>
         </Slide>
 
-        {/* ---------- 13. One capture, three answers ---------- */}
+        {/* ---------- 12. One capture, three answers ---------- */}
         <Slide>
           <Panel className="bg-neo-surface transform rotate-1">
             <SlideTitle>Three Answers, One Photo</SlideTitle>
@@ -664,7 +627,7 @@ export default function TinkerersReadThisForMePage() {
           </Panel>
         </Slide>
 
-        {/* ---------- 14. Illustrative example: the input ---------- */}
+        {/* ---------- 13. Illustrative example: the input ---------- */}
         <Slide>
           <Panel className="bg-neo-bg transform -rotate-1">
             <div className="flex flex-wrap items-center gap-4 mb-6">
@@ -694,7 +657,7 @@ export default function TinkerersReadThisForMePage() {
           </Panel>
         </Slide>
 
-        {/* ---------- 15. Illustrative example: the three summaries ---------- */}
+        {/* ---------- 14. Illustrative example: the three summaries ---------- */}
         <Slide>
           <Panel className="bg-neo-surface transform rotate-1">
             <div className="flex flex-wrap items-center gap-4 mb-8">
