@@ -113,7 +113,7 @@ export default function ArchitectureDiagram() {
             posts to the /ocr Cloud Function, which calls Google Cloud Vision
             TEXT_DETECTION and returns every word with no language model
             involved. The Explain path posts to the /explainPipeline Cloud
-            Function, which calls Cloud Vision and then Gemini Flash Lite to
+            Function, which calls Cloud Vision and then Gemini 3.5 Flash Lite to
             produce a short, medium, or long summary. Both paths converge on
             Cloud Text-to-Speech, which returns audio to the phone.
           </desc>

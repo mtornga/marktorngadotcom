@@ -198,7 +198,7 @@ export default function TinkerersReadThisForMePage() {
             <div className="flex flex-wrap justify-center gap-3 mb-8">
               <Badge variant="primary">Expo / React Native</Badge>
               <Badge variant="secondary">Cloud Vision</Badge>
-              <Badge variant="accent">Gemini Flash Lite</Badge>
+              <Badge variant="accent">Gemini 3.5 Flash Lite</Badge>
               <Badge variant="primary">Cloud TTS</Badge>
             </div>
             <div className="inline-block border-4 border-neo-text bg-white px-6 py-4 shadow-neo">
@@ -353,10 +353,15 @@ export default function TinkerersReadThisForMePage() {
             <div className="grid md:grid-cols-[240px_1fr] gap-8 items-center">
               <video
                 controls
+                playsInline
+                preload="metadata"
                 className="w-full max-w-[240px] mx-auto border-4 border-neo-text shadow-neo rounded-lg"
-                poster="/images/readthisforme/screenshot-1.png"
+                poster="/images/readthisforme/demo-2026-08-poster.jpg"
               >
-                <source src="/images/readthisforme/demo.mp4" type="video/mp4" />
+                <source
+                  src="/images/readthisforme/demo-2026-08.mp4"
+                  type="video/mp4"
+                />
                 Your browser does not support the video tag.
               </video>
               <div className="grid grid-cols-4 gap-3">
@@ -418,7 +423,7 @@ export default function TinkerersReadThisForMePage() {
             </div>
             <div className="border-8 border-neo-text bg-neo-text text-neo-bg p-6 md:p-8 shadow-neo">
               <p className="text-xl md:text-3xl font-heading font-bold mb-4">
-                Step 3 now costs about 700 milliseconds and a fraction of a cent.
+                Step 3 now costs about 470 milliseconds and a fraction of a cent.
               </p>
               <p className="text-lg md:text-2xl opacity-90">
                 So you stop picking <em>one</em> rendering on the user&apos;s behalf.
@@ -434,11 +439,12 @@ export default function TinkerersReadThisForMePage() {
           <ArchitectureDiagram />
           <p className="text-lg md:text-2xl text-neo-text/80 mt-8 mb-12">
             Two paths out of one photo. The pink path never touches a language
-            model. Gemini runs a 50/50 split between{' '}
-            <code className="font-mono bg-neo-secondary px-2">gemini-2.5-flash-lite</code>{' '}
-            and{' '}
-            <code className="font-mono bg-neo-secondary px-2">gemini-2.0-flash-lite</code>{' '}
-            so I can compare latency in production.
+            model. The explain path runs{' '}
+            <code className="font-mono bg-neo-secondary px-2">gemini-3.5-flash-lite</code>{' '}
+            — a single model now. It used to run a 50/50 split against an older
+            Flash Lite so I could compare latency in production; that older model
+            was deprecated, and the winner is both the survivor and the faster
+            one.
           </p>
         </Slide>
 
@@ -731,13 +737,17 @@ export default function TinkerersReadThisForMePage() {
         <Slide>
           <Panel className="bg-neo-accent transform rotate-1">
             <h2 className="font-heading font-bold text-3xl md:text-5xl mb-8">
-              Fifteen Cents a Month Bought Seven Seconds
+              Where the Time Actually Goes
             </h2>
+            <p className="text-lg md:text-2xl mb-8 text-neo-text/80">
+              Median warm latency, measured from 82 production log entries on
+              19 August 2026.
+            </p>
             <div className="grid md:grid-cols-3 gap-6 mb-10">
               {[
-                { label: 'Full pipeline, cold', value: '10.7s', tone: 'bg-neo-surface' },
-                { label: 'Full pipeline, warm', value: '2.9s', tone: 'bg-neo-secondary' },
-                { label: 'Time to first audio', value: '0.28s', tone: 'bg-neo-primary text-white' },
+                { label: 'Cloud Vision (OCR)', value: '562ms', tone: 'bg-neo-surface' },
+                { label: 'Gemini 3.5 Flash Lite', value: '467ms', tone: 'bg-neo-secondary' },
+                { label: 'First TTS sentence', value: '228ms', tone: 'bg-neo-primary text-white' },
               ].map((stat) => (
                 <div
                   key={stat.label}
@@ -755,14 +765,14 @@ export default function TinkerersReadThisForMePage() {
             <div className="grid md:grid-cols-2 gap-8">
               <div className="border-4 border-neo-text bg-neo-surface p-6 shadow-neo-sm">
                 <h3 className="font-heading font-bold text-xl md:text-2xl mb-3">
-                  Cloud Scheduler pings the real endpoints
+                  The first call of the day cost 5,135ms
                 </h3>
                 <p className="text-lg md:text-xl text-neo-text/80">
-                  Every five minutes, a GET to <code className="font-mono">/ocr</code>,{' '}
-                  <code className="font-mono">/explainPipeline</code>, and{' '}
-                  <code className="font-mono">/tts</code>. A separate warm-up
-                  function would be a separate Cloud Run container and would warm
-                  nothing.
+                  That is one cold Vision call from this morning&apos;s logs —{' '}
+                  <strong>9x the warm median</strong>. Cloud Scheduler now pings
+                  the real endpoints every five minutes for about fifteen cents a
+                  month. The gotcha: a dedicated warm-up function is a separate
+                  Cloud Run container and warms nothing.
                 </p>
               </div>
               <div className="border-4 border-neo-text bg-neo-surface p-6 shadow-neo-sm">
@@ -771,8 +781,9 @@ export default function TinkerersReadThisForMePage() {
                 </h3>
                 <p className="text-lg md:text-xl text-neo-text/80">
                   TTS runs one sentence at a time, and sentence N+1 loads while N
-                  plays. Only the first sentence blocks audio. The pipeline still
-                  takes ~3s; the user hears something in ~0.3s.
+                  plays. Only the first sentence blocks audio — and that sentence
+                  comes back in 228ms. The rest of the pipeline keeps working
+                  while the user is already listening.
                 </p>
               </div>
             </div>
