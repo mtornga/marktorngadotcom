@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Project } from '@/types/project';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
+import { statusBadgeVariant } from '@/lib/statusBadge';
 
 interface ProjectCardProps {
   project: Project;
@@ -29,7 +30,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         {/* Status Badge */}
         {status && (
           <div className="mb-3">
-            <Badge variant="accent">{status}</Badge>
+            <Badge variant={statusBadgeVariant(status)}>{status}</Badge>
           </div>
         )}
 

@@ -1,6 +1,7 @@
 import { ProjectFrontMatter } from '@/types/project';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
+import { statusBadgeVariant } from '@/lib/statusBadge';
 
 interface ProjectHeroProps {
   frontmatter: ProjectFrontMatter;
@@ -25,7 +26,7 @@ export default function ProjectHero({ frontmatter }: ProjectHeroProps) {
       {/* Status Badge */}
       {status && (
         <div className="mb-4">
-          <Badge variant="accent">{status}</Badge>
+          <Badge variant={statusBadgeVariant(status)}>{status}</Badge>
         </div>
       )}
 

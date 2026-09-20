@@ -1,0 +1,28 @@
+---
+title: "AI Tinkerers STL: Literacy Is Going the Way of Cursive"
+description: "Talk presented at AI Tinkerers St. Louis on August 19, 2026, on Read This For Me — why written text is becoming legacy code, and how one photo becomes four answers from a single prompt template."
+date: "2026-08-19"
+featured: true
+href: "/aitinkerersreadthisforme"
+heroImage: "/images/readthisforme/feature.png"
+tags: ["AI Tinkerers STL", "Gemini", "Cloud Vision", "Accessibility", "Prompt Design"]
+status: "Presented Live"
+demo: "/aitinkerersreadthisforme"
+---
+
+This talk has a dedicated page with the demo, the architecture, the prompt, and the measured latencies.
+
+- Event: AI Tinkerers St. Louis, August 2026 Meetup
+- Host: Sketch Development Services
+- Date: August 19, 2026
+- Event page: [AI Tinkerers St. Louis August 2026 Meetup](https://st-louis.aitinkerers.org/p/ai-tinkerers-st-louis-august-2026-meetup)
+
+## The argument
+
+Short-form video already won. When a process still requires reading, that process is written against a runtime that is being deprecated. Read This For Me is the shim: point a camera at any words and hear them back, four different ways, from a single capture.
+
+## The build
+
+One Cloud Vision `TEXT_DETECTION` call feeds two paths. The verbatim path never touches a language model at all. The explain path runs `gemini-3.5-flash-lite` against one prompt template whose only varying line is `LENGTH:` — short, medium, and long are otherwise byte-identical.
+
+Median warm latency measured from production logs on the day of the talk: 562ms for OCR, 467ms for the explanation, 228ms for the first spoken sentence.

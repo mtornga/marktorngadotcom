@@ -1,0 +1,60 @@
+---
+title: "Voice Notes Transcriber"
+description: "An event-driven GPU transcription service: press a button on my phone, and a self-hosted Parakeet worker turns the recording into searchable text that Claude can query through MCP"
+date: "2026-08-24"
+featured: false
+tags: ["Python", "NVIDIA Parakeet", "AWS SQS", "DynamoDB", "Ollama", "MCP", "Home Lab"]
+status: "Production"
+---
+
+I think out loud while walking and lifting. The useful half of that never survived to a keyboard.
+
+This is the pipeline that fixes it: a macro on my phone records a clip and uploads it to S3, and a GPU worker in my basement has the transcript on my lock screen before I've put the phone back in my pocket. As of this writing it has processed **351 voice notes** — about 57 minutes of audio, averaging just under ten seconds a note — running continuously since February 2026.
+
+## The pipeline
+
+1. An S3 upload under `voicenotes/raw/` emits an `ObjectCreated` event to SQS.
+2. The worker long-polls that queue.
+3. The audio is downloaded, speech-conditioned with an ffmpeg filter chain, and normalized to mono 16 kHz WAV.
+4. `nvidia/parakeet-tdt-0.6b-v3` transcribes it, with a configurable phrase list boosting the vocabulary I actually use.
+5. An optional local Ollama pass corrects obvious domain-specific ASR errors.
+6. Transcript and metadata land in local SQLite plus JSON sidecars.
+7. Transcript text and light metadata publish to a DynamoDB table.
+8. The first few hundred characters go to my phone as a Pushover notification.
+
+Everything expensive is local. The only cloud pieces are a queue, an object store, and one small table.
+
+## Design decisions worth keeping
+
+**Three versions of every transcript.** Each row stores `raw_text` (untouched Parakeet output), `cleaned_text` (when the cleanup model ran), and `text` (the canonical value that gets pushed and published). The cleanup model can rewrite a word into something wrong, and when it does I want the original still sitting there. Cleanup failures fall back to `raw_text` and do not fail the SQS message. In the current corpus the cleaner has touched very few notes — most pass through unchanged, which is exactly the behavior a *conservative* cleanup pass should have.
+
+**Publishing must never fail transcription.** Transcription is the expensive GPU step; publishing is cheap and re-runnable. A publish failure is logged as a `publish` stage event and the SQS message is still deleted. A backfill script re-publishes everything idempotently when the table needs rebuilding.
+
+**Timestamps are a timezone bug waiting to happen.** The recorder writes phone wall-clock local time into the filename, hour not always zero-padded, with an optional `__loc_` geotag token. `recorded_at` — the DynamoDB sort key — is derived from that filename and converted to UTC via a configured local timezone, falling back to the row's `created_at`. Both the publisher and the presign service depend on that filename shape, which is why the README says to keep them in sync if the recorder config ever changes.
+
+**A write-only identity for publishing.** The publish step uses a separate IAM user with `PutItem` on the transcript table and nothing else, rather than reusing the broader worker credentials.
+
+**Word-level timestamps stay home.** The published record carries transcript text and light metadata. Word confidences and per-word timing never leave the LAN.
+
+## Querying notes from anywhere
+
+The DynamoDB table sits behind a companion MCP endpoint, so Claude can answer questions against months of voice notes without the notes ever being pasted into a chat. That is the actual payoff: the notes aren't an archive I have to remember to open, they're a source I can ask questions of.
+
+There's also a read-only LAN web UI on port 8787 that lists recent transcripts and generates presigned audio URLs on demand, with an optional bearer token if I want to lock it down further.
+
+## The unglamorous fixes
+
+A `lhotse`/`torch` version incompatibility caused a runtime sampler failure, so the bootstrap script force-pins `lhotse` to 1.32.2 after installing the NeMo dependencies. That one line is the difference between a service that starts and a service that doesn't.
+
+The more interesting bug was on the phone. The start and stop macros shared a global `fileName`, and an upload could still be running when the next recording began — so recording twice in quick succession made the second recording clobber the file the first one was still uploading. The fix is a discipline, not a patch: the stop macro copies the global into a local `uploadFileName` the moment recording stops, builds the local path and S3 key exclusively from that local, never clears the global (a newer recording may own it), and checks for HTTP 200 before considering the file done.
+
+## Operations
+
+The worker runs as a systemd service with a companion prune timer that ages out cached audio — seven days for originals, thirty for failed artifacts retained for debugging. A health check verifies queue, database, and model without loading the model when you don't want to pay for that.
+
+```sh
+journalctl -u voice-notes-transcriber.service -f
+python -m voice_notes_transcriber.health --skip-model-load
+```
+
+The repository is private, since it is wired directly into my own S3 bucket, queue, and notification credentials.

@@ -1,8 +1,11 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
+import remarkGfm from 'remark-gfm';
 import Container from '@/components/layout/Container';
 import { ProjectHero } from '@/components/portfolio';
+import Figure from '@/components/ui/Figure';
+import HoverPhoto from '@/components/ui/HoverPhoto';
 import { getProjectBySlug, getProjectSlugs } from '@/lib/content';
 
 interface ProjectPageProps {
@@ -61,7 +64,18 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
         {/* MDX Content */}
         <article className="prose prose-lg max-w-none">
-          <MDXRemote source={content} />
+          <MDXRemote
+            source={content}
+            components={{
+              Figure,
+              HoverPhoto,
+            }}
+            options={{
+              mdxOptions: {
+                remarkPlugins: [remarkGfm],
+              },
+            }}
+          />
         </article>
       </Container>
     </main>

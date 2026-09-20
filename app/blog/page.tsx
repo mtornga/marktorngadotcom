@@ -7,7 +7,7 @@ import { getAllPosts } from '@/lib/content';
 
 export const metadata: Metadata = {
   title: 'Writing | Mark Tornga',
-  description: 'Thoughts on data, automation, maker projects, and building things that work.',
+  description: 'Essays and deep dives — film, history, and whatever is worth chasing down.',
 };
 
 export default function BlogPage() {
@@ -22,8 +22,9 @@ export default function BlogPage() {
             Writing
           </h1>
           <p className="text-xl max-w-2xl mx-auto">
-            Maker projects, automation experiments, and lessons learned building
-            systems that work.
+            Essays and deep dives &mdash; film, history, and whatever is worth
+            chasing down. Build logs live in the{' '}
+            <a href="/portfolio" className="neo-link">portfolio</a>.
           </p>
         </div>
 

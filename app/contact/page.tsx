@@ -5,7 +5,7 @@ import Button from '@/components/ui/Button';
 
 export const metadata: Metadata = {
   title: 'Contact | Mark Tornga',
-  description: 'Get in touch for data architecture consulting, full-time opportunities, or just to connect.',
+  description: 'Get in touch about consulting engagements, data and analytics work, or just to connect.',
 };
 
 export default function ContactPage() {
@@ -18,8 +18,8 @@ export default function ContactPage() {
             Let&apos;s Work Together
           </h1>
           <p className="text-xl max-w-2xl mx-auto">
-            Currently doing data architecture consulting. Open to full-time roles
-            or consulting engagements.
+            Currently the (only) Lead Analytics Engineer at Mercy. Open to
+            consulting engagements.
           </p>
         </div>
 

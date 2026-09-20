@@ -1,0 +1,73 @@
+---
+title: "Spectrum Internet Monitoring"
+description: "A wired home-internet observer that measures what the ISP actually delivers — continuous ICMP, DNS, HTTPS and hourly speed tests, with incident detection, push alerts, and a weekly report"
+date: "2026-09-05"
+featured: false
+tags: ["Python", "SQLite", "systemd", "Observability", "Networking", "Home Lab"]
+status: "Production"
+---
+
+Arguing with an ISP is an evidence problem. "The internet keeps going out" is a feeling. "Five outages totalling 31.4 hours, the longest 30 hours, measured from a wired host every ten seconds with 99.6% coverage" is a case.
+
+This is a single-file Python daemon that builds that case. It runs on `ubuntubasement`, my home Linux server, as a user-level systemd service. No cloud service, no public port, no third-party Python dependencies — just the standard library, `ping`, `curl`, `ip`, and the official Ookla Speedtest CLI.
+
+## What it measures
+
+Every **ten seconds** it pings the gateway plus Cloudflare, Google, and Quad9 — three packets per target, with gateway status stored separately so local network trouble can be told apart from upstream trouble.
+
+Every **minute** it checks two DNS resolvers and two HTTPS providers. HTTPS also fires immediately whenever every internet ping fails. The HTTPS checks use pinned provider addresses with normal TLS verification, so a DNS failure can't masquerade as a total loss of internet.
+
+Every **hour** it runs a download/upload test against a fixed Spectrum server in Olivette. A low result doesn't alert on its own — it schedules a confirmation five minutes later against an AT&T server in St. Louis. Tests time out after three minutes and never run concurrently.
+
+Every probe explicitly binds to the wired interface `enp7s0`, and Ookla additionally validates its reported source address before a measurement is accepted. A measurement that leaked onto another interface is not a measurement.
+
+## The part that took the real work
+
+Collecting samples is easy. Deciding what counts as an incident is the whole project.
+
+**An outage requires everything to fail at once.** Every internet ICMP target *and* both HTTPS checks. One working target prevents the declaration. Every outage gets recorded, including short interruptions, but only outages of 60 seconds or more generate a notification — and only once three consecutive successful rounds confirm recovery, with the reported end time set to the first of those three.
+
+**No alert is sent during a complete outage.** Without internet access, Pushover is unreachable. Pending alerts survive restarts, and an incident that recovers before its opening alert goes out is consolidated into a single completed-incident summary rather than firing twice.
+
+**Degradation is separate from outage.** A five-minute window opens a degradation incident if at least two internet targets exceed 5% loss or 100 ms median RTT, and it needs at least 24 clean rounds in a contiguous window. Speed tests — and the 20 seconds after them — are marked *loaded* and excluded from that decision, because a speed test saturating the link is not a network problem.
+
+**Null is not zero.** Invalid, timed-out, or misrouted speed tests store null, not a zero-speed measurement. Three consecutive failures produce a distinct "measurement unavailable" alert instead of quietly reporting an outage that never happened.
+
+**Gaps are not downtime.** Uptime is successful observed time over covered time. Each sample covers at most ten seconds; a missing interval never becomes assumed downtime. A monitoring gap longer than 25 seconds closes any open connectivity incident at the last observed interval and marks the recovery unknown. Coverage is reported against the full requested window, so a partial window says so out loud.
+
+## Reporting
+
+`data/monitor.sqlite3` holds raw samples, speed tests, incidents, persisted state, an outgoing notification queue, and report history, with 90-day retention and WAL enabled for concurrent reads. Monday at 08:00 America/Chicago, a Pushover summary covers the past 7, 30, and 60 days. The report runs on its own thread with its own database connection so collection never pauses. A missed report is delivered after recovery without replaying months of old weeks.
+
+A live report preview looks like this:
+
+```text
+Spectrum • rolling days
+D/U Mbps; RTT med/p95 ms; loss; coverage
+P7: up 100.00%; outages 0/0s max 0s
+D/U 84/83.7; RTT 18/22; loss 0.6%; cov 99.6%
+P30 partial: up 91.26%; outages 5/31.4h max 30.0h
+D/U 84/83.8; RTT 17/22; loss 9.3%; cov 49.7%
+P7 loaded RTT 168 ms. Gaps excluded; wired observer.
+```
+
+## Honest limits, stated in the README
+
+The reference plan is 1,045/40 Mbps. The server's 1 Gbps Ethernet link **cannot measure the full advertised download speed** — so the numbers are a floor, not a ceiling. Household traffic lowers results. Latency varies by destination. Gateway success is diagnostic evidence about where a fault sits, not proof of whose fault it is. Speed medians are sampled performance, not continuous throughput.
+
+Pushover also has no send idempotency key, so an ambiguous transport timeout can deliver a duplicate even though local event transitions are deduplicated. That's in the README too. A monitoring tool that oversells its own precision is worse than no monitoring tool.
+
+## Operations
+
+`deploy.sh` rsyncs source and runs an installer over SSH, pulling a pinned, checksum-verified Ookla release and reusing the two Pushover values already on the box without ever printing them. Existing data, logs, and secrets are excluded from source sync.
+
+```sh
+python3 monitor.py status           # current state, no notifications sent
+python3 monitor.py report-preview   # render the weekly report without sending
+python3 monitor.py probe            # read-only live network check
+python3 monitor.py export --table incidents > incidents.csv
+```
+
+The unit test suite runs against temporary databases and synthetic network responses — it never disturbs the actual connection or sends a real push. Live commissioning covered the parts tests can't reach: real service permissions, interface binding, notification acceptance, speed-result parsing, and continued collection after SSH disconnect.
+
+One deployment detail worth writing down: `NoNewPrivileges=true` had to stay *off* in the unit file. On this server it breaks interface-bound ICMP, because `ping` relies on its existing file capability. The whole install needs no administrator privileges at all.

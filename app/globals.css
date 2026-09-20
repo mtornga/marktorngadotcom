@@ -197,16 +197,23 @@ h3 {
     }
   }
 
-  /* Homepage layout spacing (defined in components layer so it is preserved) */
+  /* Homepage layout spacing.
+     These live on their own wrapper elements rather than on the same node as
+     `.container`, whose unlayered `margin`/`padding` shorthands would otherwise
+     win the cascade against this layer and flatten the gaps to zero. */
   .home-page {
     padding-top: 2.5rem;
     padding-bottom: 3.5rem;
   }
 
   .home-hero {
+    display: flex;
+    align-items: center;
     justify-content: center;
-    margin-bottom: clamp(2.5rem, 6vw, 4rem);
     min-height: clamp(20rem, 46vh, 30rem);
+    /* The hero card carries an 8px offset drop shadow, so the gap below is
+       measured from the shadow, not the border. */
+    margin-bottom: clamp(3.5rem, 7vw, 5.5rem);
   }
 
   .home-featured {
