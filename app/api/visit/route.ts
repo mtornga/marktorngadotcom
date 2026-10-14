@@ -13,10 +13,7 @@ import {
 } from "@/lib/visit/filters";
 import { lookupIpinfo } from "@/lib/visit/ipinfo";
 import { hashIp, maskIp, sanitizeUtmParams } from "@/lib/visit/privacy";
-import {
-  sendPushoverSessionStartNotification,
-  sendPushoverVisitNotification,
-} from "@/lib/visit/pushover";
+import { sendPushoverVisitNotification } from "@/lib/visit/pushover";
 import {
   deriveCookielessFingerprint,
   getSessionConfigFromEnv,
@@ -215,6 +212,7 @@ async function parsePayload(request: Request): Promise<VisitPayload | undefined>
     clientTs: parseClientTs(value.clientTs),
     activeMsDelta: parseActiveMsDelta(value.activeMsDelta),
     scrollMaxPct: parseScrollMaxPct(value.scrollMaxPct),
+    hasInteraction: value.hasInteraction === true,
     path,
     utm: sanitizeUtmParams(value.utm),
     referrer: parseOptionalUrl(value.referrer),
@@ -457,6 +455,7 @@ export async function POST(request: Request): Promise<Response> {
       clientTs: payload.clientTs ?? Date.now(),
       activeMsDelta: payload.activeMsDelta,
       scrollMaxPct: payload.scrollMaxPct,
+      hasInteraction: payload.hasInteraction,
     },
     fingerprint,
     SESSION_CONFIG,
@@ -474,11 +473,6 @@ export async function POST(request: Request): Promise<Response> {
     return new Response(null, { status: 204 });
   }
 
-  let pushedStart = false;
-  if (recorded.startedNewSession && eventType === "page_view") {
-    pushedStart = await sendPushoverSessionStartNotification(recorded.session);
-  }
-
   console.info("[visit-notify] session event processed", {
     mode: "session_tracking",
     sessionId: recorded.session.sessionId,
@@ -490,7 +484,7 @@ export async function POST(request: Request): Promise<Response> {
     hashedIp,
     deviceClass: userAgent.deviceClass,
     country: geo.country,
-    pushedStart,
+    notificationDecision: recorded.session.notificationDecision,
   });
 
   return new Response(null, { status: 204 });

@@ -11,6 +11,7 @@ export interface VisitPayload {
   clientTs?: number;
   activeMsDelta?: number;
   scrollMaxPct?: number;
+  hasInteraction?: boolean;
   path: string;
   utm?: Record<string, string>;
   referrer?: string;
@@ -101,10 +102,18 @@ export interface ActiveSessionRecord {
   pageHideCount: number;
   totalEngagedMs: number;
   lastEventType: VisitEventType;
+  hasInteraction?: boolean;
+  notificationDecision?: SessionNotificationDecision;
+}
+
+export interface SessionNotificationDecision {
+  qualified: boolean;
+  reason: "brief_visit" | "no_interaction" | "qualified_engagement";
 }
 
 export interface SessionSummaryPage {
   path: string;
+  title?: string;
   engagedMs: number;
   maxScrollPct: number;
   viewCount: number;
@@ -129,6 +138,7 @@ export interface SessionSummary {
   geo: GeoInfo;
   ipinfo?: IpinfoEnrichment;
   topPages: SessionSummaryPage[];
+  journey?: string[];
   fullUrl: string;
 }
 
@@ -156,4 +166,5 @@ export interface SessionEventInput {
   clientTs: number;
   activeMsDelta?: number;
   scrollMaxPct?: number;
+  hasInteraction?: boolean;
 }

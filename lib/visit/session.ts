@@ -6,12 +6,14 @@ import {
   getKvString,
   isKvConfigured,
   kvKeyExists,
+  runKvCommand,
   setKvJson,
   setKvString,
   zaddKv,
   zrangeByScoreKv,
   zremKv,
 } from "@/lib/visit/kv";
+import { getSessionNotificationDecision } from "@/lib/visit/notification-policy";
 import type { ActiveSessionRecord, SessionConfig, SessionEventInput, SessionSummary, SessionSummaryPage } from "@/lib/visit/types";
 
 const ACTIVE_FINGERPRINT_KEY_PREFIX = "visit:active:fingerprint:";
@@ -98,14 +100,18 @@ function buildTopPages(session: ActiveSessionRecord): SessionSummaryPage[] {
     .slice(0, 3)
     .map((page) => ({
       path: page.path,
+      title: page.title,
       engagedMs: page.engagedMs,
       maxScrollPct: page.maxScrollPct,
       viewCount: page.viewCount,
     }));
 }
 
-export function buildSessionSummary(session: ActiveSessionRecord, endedAtMs: number): SessionSummary {
+export function buildSessionSummary(session: ActiveSessionRecord, finalizedAtMs: number): SessionSummary {
   const startedAtMs = toMs(session.startedAtIso);
+  // Finalization runs after the idle timeout. End the visit at its last event,
+  // so waiting for the scheduler does not count as time spent on the site.
+  const endedAtMs = Math.max(startedAtMs, Math.min(toMs(session.lastSeenAtIso), finalizedAtMs));
   const durationMs = Math.max(0, endedAtMs - startedAtMs);
   const endedAtIso = toIso(endedAtMs);
 
@@ -128,6 +134,7 @@ export function buildSessionSummary(session: ActiveSessionRecord, endedAtMs: num
     geo: session.geo,
     ipinfo: session.ipinfo,
     topPages: buildTopPages(session),
+    journey: session.pageSequence.map((path) => session.pages[path]?.title ?? path),
     fullUrl: `https://${session.host}${session.exitPath}`,
   };
 }
@@ -247,6 +254,8 @@ function applySessionEvent(
   }
 
   session.pages[input.path] = page;
+  session.hasInteraction = session.hasInteraction === true || input.hasInteraction === true;
+  session.notificationDecision = getSessionNotificationDecision(session);
   return session;
 }
 
@@ -346,6 +355,23 @@ async function finalizeSession(
   config: SessionConfig,
   nowMs: number,
 ): Promise<SessionSummary | undefined> {
+  // Primary and fallback schedulers can overlap. Only one may close/report a
+  // session; the short lock expires if a process is interrupted.
+  const key = `visit:notification:finalizing:${sessionId}`;
+  const claim = await runKvCommand<string | null>(["SET", key, "1", "NX", "EX", 120]);
+  if (claim !== "OK") return undefined;
+  try {
+    return await finalizeSessionUnlocked(sessionId, config, nowMs);
+  } finally {
+    await deleteKvKey(key);
+  }
+}
+
+async function finalizeSessionUnlocked(
+  sessionId: string,
+  config: SessionConfig,
+  nowMs: number,
+): Promise<SessionSummary | undefined> {
   const closed = await kvKeyExists(closedKey(sessionId));
   if (closed) {
     await zremKv(SESSION_LAST_SEEN_ZSET_KEY, sessionId);
@@ -365,6 +391,16 @@ async function finalizeSession(
   // Ignore orphan sessions that never captured a page_view.
   if (session.pageViewCount <= 0) {
     await closeSession(session, config, nowMs);
+    return undefined;
+  }
+
+  session.notificationDecision = getSessionNotificationDecision(session);
+  if (!session.notificationDecision.qualified) {
+    await closeSession(session, config, nowMs);
+    console.info("[visit-notify] session notification suppressed", {
+      sessionId: session.sessionId,
+      reason: session.notificationDecision.reason,
+    });
     return undefined;
   }
 

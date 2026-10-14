@@ -4,6 +4,7 @@
   "description": "Personal site repository placeholder. Initial commit.",
   "main": "index.js",
   "scripts": {
+    "test:visit": "node --test tests/visit-notifications.test.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

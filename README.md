@@ -13,9 +13,16 @@ This project includes first-party tracking that posts visit/session events to `P
 - Device class, browser, and OS.
 - Geo from Vercel request headers (city/region/country + edge region).
 - ASN/network enrichment from IPinfo Lite.
-- Masked IP in notification; optional hashed IP in logs.
+- Masked IP in retained session records; optional hashed IP in logs.
 - Session events (`page_view`, `heartbeat`, `page_hide`) when session mode is enabled.
 - Session summary metrics: duration, engaged time, page count, top pages, max scroll.
+
+Metric definitions:
+
+- Duration runs from the session's first event to its last event, excluding the inactivity timeout and scheduler delay.
+- Visible time counts time with the tab visible; it does not prove active reading.
+- Max page scroll measures the furthest scroll position as a percentage of the whole document's scrollable height, including headers and footers. It is not the percentage of article text read. Multiple views of the same path within a session share one maximum.
+- Session records, including closed sessions, remain in KV for the configured TTL (seven days by default). Analysis should use one record per session/path rather than count heartbeats as visits, and treat open sessions as incomplete.
 
 ### Behavior defaults
 
@@ -28,7 +35,18 @@ This project includes first-party tracking that posts visit/session events to `P
 ### Notification modes
 
 - Sessions disabled: page-view notifications (existing behavior).
-- Sessions enabled: one `Session Start` push when a new session begins and one `Session Summary` push after inactivity timeout.
+- Sessions enabled: one `Visit ended` report after inactivity timeout, only for sessions with at least 15 seconds of visible time plus browser-trusted input (wheel, touch, pointer, or keyboard) or navigation to a second distinct path. No arrival or engagement push is sent.
+- Unqualified sessions are retained in KV with `notificationDecision.reason`: `brief_visit` for less than 15 seconds visible, or `no_interaction` for sufficient visible time without input/navigation. Qualified sessions have `qualified_engagement`. These are engagement classifications, not bot verdicts. Client input signals can still be imitated by automation.
+- Restored/scripted scroll positions and repeated reloads alone do not qualify a session. Older clients without an input signal can only qualify through distinct-path navigation plus visible time.
+
+### Report presentation
+
+- Title names the page with the most visible time. Body leads with visible time, distinct pages, visit span (excluding idle timeout), source and device.
+- Up to three pages show readable titles, visible time and maximum whole-page scroll. Multi-page visits include a compact navigation journey.
+- Location, network and end time appear below the reading metrics. Missing referrers show `Direct / unknown`. The report links to the page with the most visible time.
+- Pushover HTML formatting adds bold text in the app; the notification preview remains readable as plain text. Reports fit the 1024-character limit without cutting HTML tags.
+- Session records also retain language, visitor timezone, masked IP, raw user agent, network metadata, event counts, per-page timestamps and qualification/suppression reasons. These stay out of the phone report. Viewport and safe UTM values are accepted by the endpoint but are not currently retained in session records.
+- `VISIT_PUSHOVER_API_TOKEN` routes reports through a dedicated Pushover application without changing shared `PUSHOVER_API_TOKEN` usage elsewhere. `VISIT_NOTIFY_REPORT_TIMEZONE` controls displayed end times (default `America/Chicago`).
 
 ### Environment variables
 
@@ -39,6 +57,8 @@ Copy `.env.example` and set values in Vercel **Production** environment:
 - `NEXT_PUBLIC_VISIT_NOTIFY_HEARTBEAT_SECONDS=15` (optional override for client heartbeat cadence)
 - `PUSHOVER_USER_KEY`
 - `PUSHOVER_API_TOKEN`
+- `VISIT_PUSHOVER_API_TOKEN` (dedicated website application; optional fallback to `PUSHOVER_API_TOKEN`)
+- `VISIT_NOTIFY_REPORT_TIMEZONE=America/Chicago`
 - `PUSHOVER_ENABLED=true`
 - `PUSHOVER_PRIORITY=0`
 - `IPINFO_TOKEN`
@@ -139,5 +159,5 @@ curl -i -X POST http://localhost:3000/api/visit \
 1. Deploy to Vercel production with vars above.
 2. Validate page-view mode first (`VISIT_NOTIFY_SESSIONS_ENABLED=false`) and confirm visit pushes work.
 3. Configure KV + cron secret, then set `VISIT_NOTIFY_SESSIONS_ENABLED=true`.
-4. Visit `https://marktornga.com` from a non-excluded IP and confirm `Session Start` push.
-5. Wait past idle timeout and confirm `Session Summary` push.
+4. Visit `https://marktornga.com` from a non-excluded IP, interact and remain visible for at least 15 seconds. No immediate push should arrive.
+5. Wait past idle timeout and confirm a single `Visit ended` report. A brief or interaction-free visit should generate no alert and retain its suppression reason in KV.

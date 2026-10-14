@@ -102,6 +102,7 @@ export default function VisitTracker() {
   const trackedPathRef = useRef<string>("");
   const trackedQueryRef = useRef<string>("");
   const maxScrollPctRef = useRef<number>(0);
+  const hasInteractionRef = useRef(false);
   const lastVisibleAtRef = useRef<number | undefined>(undefined);
 
   const queryString = useMemo(() => searchParams.toString(), [searchParams]);
@@ -123,6 +124,7 @@ export default function VisitTracker() {
       clientTs: Date.now(),
       activeMsDelta,
       scrollMaxPct: maxScrollPctRef.current,
+      hasInteraction: hasInteractionRef.current,
       path: targetPath,
       utm: sanitizeUtmParams(new URLSearchParams(targetQuery)),
       referrer: document.referrer || undefined,
@@ -185,6 +187,7 @@ export default function VisitTracker() {
     trackedPathRef.current = pathname;
     trackedQueryRef.current = queryString;
     maxScrollPctRef.current = currentScrollMaxPct();
+    hasInteractionRef.current = false;
     lastVisibleAtRef.current = document.hidden ? undefined : Date.now();
 
     emit("page_view", undefined, pathname, queryString);
@@ -216,6 +219,13 @@ export default function VisitTracker() {
       lastVisibleAtRef.current = Date.now();
     };
 
+    // Restored/scripted scroll positions are not evidence of input.
+    const onInteraction = (event: Event) => {
+      if (event.isTrusted && !document.hidden && pageIdRef.current) {
+        hasInteractionRef.current = true;
+      }
+    };
+
     const onPageHide = () => {
       if (!pageIdRef.current) {
         return;
@@ -225,6 +235,10 @@ export default function VisitTracker() {
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("wheel", onInteraction, { passive: true });
+    window.addEventListener("touchstart", onInteraction, { passive: true });
+    window.addEventListener("pointerdown", onInteraction, { passive: true });
+    window.addEventListener("keydown", onInteraction);
     document.addEventListener("visibilitychange", onVisibilityChange);
     window.addEventListener("pagehide", onPageHide);
 
@@ -240,6 +254,10 @@ export default function VisitTracker() {
 
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("wheel", onInteraction);
+      window.removeEventListener("touchstart", onInteraction);
+      window.removeEventListener("pointerdown", onInteraction);
+      window.removeEventListener("keydown", onInteraction);
       document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener("pagehide", onPageHide);
       window.clearInterval(heartbeatTimer);
