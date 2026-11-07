@@ -65,7 +65,6 @@ export interface ResumeExpandedExperienceNote {
   notes: string[];
 }
 
-export const resumePdfPath = '/resume/Mark_Tornga_Resume_2026-02-09.pdf';
 
 export const resumeLevels: ResumeLevel[] = [
   {

@@ -15,7 +15,6 @@ import {
   resumeIdentity,
   resumeLevels,
   resumePdfExperience,
-  resumePdfPath,
   resumePdfProjects,
   resumePdfSkillClusters,
   resumePdfSummary,
@@ -315,7 +314,6 @@ export default function RoundTwoOptionB() {
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button href={resumePdfPath} variant="primary">Resume PDF</Button>
               <Button href={`mailto:${resumeIdentity.email}`} variant="secondary">Email</Button>
               <Button href={resumeIdentity.linkedin} variant="secondary">LinkedIn</Button>
             </div>
@@ -337,7 +335,6 @@ export default function RoundTwoOptionB() {
               <div className="flex flex-wrap justify-center gap-3">
                 <Button href={`mailto:${resumeIdentity.email}`} variant="primary">Email</Button>
                 <Button href={resumeIdentity.linkedin} variant="secondary">LinkedIn</Button>
-                <Button href={resumePdfPath} variant="secondary">Download PDF</Button>
               </div>
             </article>
           </section>
