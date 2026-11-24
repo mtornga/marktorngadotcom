@@ -273,7 +273,7 @@ function DeepResumeView({ level }: { level: 2 | 3 }) {
         </div>
       </article>
 
-      <article className="rounded-sm border border-zinc-300 bg-white p-5 md:p-6 shadow-sm">
+      <article id="WhatPeopleSay" className="rounded-sm border border-zinc-300 bg-white p-5 md:p-6 shadow-sm scroll-mt-28">
         <h2 className="font-heading font-bold text-2xl mb-3">What People Say</h2>
         <div className="space-y-3">
           {resumeQuoteLibrary.slice(0, deepConfig.quoteCount).map((item) => (
@@ -297,10 +297,22 @@ export default function RoundTwoOptionB() {
     const rawLevel = new URLSearchParams(window.location.search).get('level');
     const parsed = Number(rawLevel);
 
-    if (Number.isInteger(parsed) && parsed >= 0 && parsed <= 3) {
-      setLevel(parsed);
+    const wantsQuotes = window.location.hash === '#WhatPeopleSay';
+
+    if (rawLevel !== null && Number.isInteger(parsed) && parsed >= 0 && parsed <= 3) {
+      setLevel(wantsQuotes && parsed < 2 ? 3 : parsed);
+    } else if (wantsQuotes) {
+      setLevel(3);
     }
   }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || level < 2) return;
+    if (window.location.hash !== '#WhatPeopleSay') return;
+    requestAnimationFrame(() => {
+      document.getElementById('WhatPeopleSay')?.scrollIntoView({ block: 'start' });
+    });
+  }, [level]);
 
   return (
     <main className="py-8 md:py-10">
