@@ -264,7 +264,7 @@ export const resumeQuotes: ResumeQuote[] = [
   {
     quote:
       'If I were assembling a team for a critical data project, I\'d want Mark on it.',
-    attribution: 'Senior Architect',
+    attribution: 'Solution Architect',
   },
 ];
 
