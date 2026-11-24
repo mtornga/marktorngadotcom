@@ -309,9 +309,13 @@ export default function RoundTwoOptionB() {
   useEffect(() => {
     if (typeof window === 'undefined' || level < 2) return;
     if (window.location.hash !== '#WhatPeopleSay') return;
-    requestAnimationFrame(() => {
-      document.getElementById('WhatPeopleSay')?.scrollIntoView({ block: 'start' });
-    });
+    // Retry briefly: layout (and Next's own scroll handling) can settle after this effect runs.
+    const timers = [50, 250, 600].map((delay) =>
+      window.setTimeout(() => {
+        document.getElementById('WhatPeopleSay')?.scrollIntoView({ block: 'start' });
+      }, delay),
+    );
+    return () => timers.forEach((t) => window.clearTimeout(t));
   }, [level]);
 
   return (

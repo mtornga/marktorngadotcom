@@ -507,6 +507,11 @@ export const resumeExpandedProjects: ResumeExpandedProject[] = [
 export const resumeQuoteLibrary: ResumeQuote[] = [
   {
     quote:
+      'Mark met and exceeded all deliverable requests with impressive speed and accuracy. He served as a leader in novel tool development, deployment infrastructure, and the implementation of AI.',
+    attribution: 'Manager of Provider Analytics, Mercy',
+  },
+  {
+    quote:
       'Mark and his team have successfully delivered six AI projects, becoming early adopters and educators in the field.',
     attribution: 'Vice President of Finance, Core and Main',
   },
