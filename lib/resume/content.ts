@@ -543,7 +543,7 @@ export const resumeQuoteLibrary: ResumeQuote[] = [
   {
     quote:
       'One of the most positive experiences I have had on a project. If I were assembling a team for a critical data project, I would want Mark on it.',
-    attribution: 'Senior Architect, Slalom',
+    attribution: 'Solution Architect, Slalom',
   },
   {
     quote:
